@@ -1,0 +1,9 @@
+# Ignore draw.io files
+*.drawio
+
+# Ignore draw.io temp files
+*.dtmp
+*.bkp
+
+# Ignore word temp files
+*.tmp
