@@ -14,76 +14,88 @@ GRANT ALL PRIVILEGES ON `gatechuser`.* TO 'gatechUser'@'localhost';
 GRANT ALL PRIVILEGES ON `cs6400_sum22_team065`.* TO 'gatechUser'@'localhost';
 
 CREATE TABLE User (
-    Email VARCHAR(20) PRIMARY KEY,
-    PostalCode VARCHAR(5),
-    Password VARCHAR(20),
+    Email VARCHAR(20) NOT NULL,
+    PostalCode VARCHAR(5) NOT NULL,
+    Password VARCHAR(20) NOT NULL,
     Nickname VARCHAR(20) UNIQUE,
-    FirstName VARCHAR(20),
-    LastName VARCHAR(20)
+    FirstName VARCHAR(20) NOT NULL,
+    LastName VARCHAR(20) NOT NULL,
+    PRIMARY KEY(Email)
 );;
 
 CREATE TABLE Item (
-    ItemNumber INT(16) PRIMARY KEY,
-    UserEmail VARCHAR(20),
-    Title VARCHAR(20),
-    Description VARCHAR(50)
+    ItemNumber INT(16) NOT NULL,
+    UserEmail VARCHAR(20) NOT NULL,
+    Title VARCHAR(20) NOT NULL,
+    Description VARCHAR(50),
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE Condition(
-    Type VARCHAR(20) PRIMARY KEY,
-    ItemNumber INT(16)
+    Type VARCHAR(20) NOT NULL,
+    ItemNumber INT(16) NOT NULL,
+    PRIMARY KEY(Type, ItemNumber)
 );
 
 CREATE TABLE Address (
-    PostalCode VARCHAR(5) PRIMARY KEY,
-    City VARCHAR(20),
-    State VARCHAR(20),
-    Latitude INT(16),
-    Longitude INT(16)
+    PostalCode VARCHAR(5) NOT NULL,
+    City VARCHAR(20) NOT NULL,
+    State VARCHAR(20) NOT NULL,
+    Latitude INT(16) NOT NULL,
+    Longitude INT(16) NOT NULL,
+    PRIMARY KEY(PostalCode)
 );
 
 CREATE TABLE Trade (
-    ProposedItemNumber INT(16),
+    ProposedItemNumber INT(16) NOT NULL,
     CounterItemNumber INT(16),
-    IsTradeAccepted BOOLEAN,
-    ProposedDate datetime,
+    IsTradeAccepted BOOLEAN NOT NULL DEFAULT 0,
+    ProposedDate datetime NOT NULL,
     TradeStatus VARCHAR(10),
-    FulfilledDate datetime
+    FulfilledDate datetime,
+    PRIMARY KEY(ProposedItemNumber, CounterItemNumber)
 );
 
 CREATE TABLE BoardGame (
-    ItemNumber INT(16)
+    ItemNumber INT(16) NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE PlayingCardGame (
-    ItemNumber INT(16)
+    ItemNumber INT(16) NOT NULL,
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE CollectibleCardGame (
-    ItemNumber INT(16),
-    NoCards INT(16)
+    ItemNumber INT(16) NOT NULL,
+    NoCards INT(16) NOT NULL,
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE VideoGame (
-    ItemNumber INT(16),
-    PlatformName VARCHAR(20),
-    MediaName VARCHAR(20)
+    ItemNumber INT(16) NOT NULL,
+    PlatformName VARCHAR(20) NOT NULL,
+    MediaName VARCHAR(20) NOT NULL,
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE ComputerGame (
-    ItemNumber INT(16),
-    PlatformName VARCHAR(20)
+    ItemNumber INT(16) NOT NULL,
+    PlatformName VARCHAR(20) NOT NULL,
+    PRIMARY KEY(ItemNumber)
 );
 
 CREATE TABLE Media (
-    Name VARCHAR(20) PRIMARY KEY
+    Name VARCHAR(20) NOT NULL,
+    PRIMARY KEY (Name)
 );
 
 CREATE TABLE Platform (
-    Name VARCHAR(20) PRIMARY KEY
+    Name VARCHAR(20) NOT NULL,
+    PRIMARY KEY (Name)
 );
 
-
+-- Add foreign key relationships now that all the attributes exists
 ALTER TABLE User
     ADD CONSTRAINT fk_UserAddress FOREIGN KEY (PostalCode) REFERENCES Address(PostalCode);
 
