@@ -2,19 +2,19 @@
 
 CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED BY 'gatech123';
 
-DROP DATABASE IF EXISTS `cs6400_su22_team65`;
+DROP DATABASE IF EXISTS `cs6400_su2_team65`;
 
 SET default_storage_engine=InnoDB;
 
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE DATABASE IF NOT EXISTS cs6400_su22_team65
+CREATE DATABASE IF NOT EXISTS cs6400_su2_team65
 
    DEFAULT CHARACTER SET utf8mb4
 
    DEFAULT COLLATE utf8mb4_unicode_ci;
 
-USE cs6400_su22_team65;
+USE cs6400_su2_team65;
 
 GRANT SELECT, INSERT, UPDATE, DELETE, FILE ON *.* TO 'gatechUser'@'localhost';
 
@@ -48,19 +48,12 @@ CREATE TABLE `User`(
 	FOREIGN KEY (Address) REFERENCES Address(PostalCode)
 );
 
-CREATE TABLE ItemCondition(
-	Type varchar(50) NOT NULL,
-	PRIMARY KEY (Type)
-);
-
-
 CREATE TABLE Item(
 	ItemNumber int NOT NULL,
 	Title varchar(50) NOT NULL,
 	Description varchar(50),
 	ItemCondition varchar(50) NOT NULL,
-	PRIMARY KEY (ItemNumber),
-	FOREIGN KEY (ItemCondition) REFERENCES ItemCondition(Type)
+	PRIMARY KEY (ItemNumber)
 );
 
 
