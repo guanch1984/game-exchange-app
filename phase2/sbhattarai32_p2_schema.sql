@@ -52,18 +52,12 @@ CREATE TABLE Item(
 	ItemNumber int NOT NULL,
 	Title varchar(50) NOT NULL,
 	Description varchar(50),
+	Owner varchar(50) NOT NULL,
 	ItemCondition varchar(50) NOT NULL,
-	PRIMARY KEY (ItemNumber)
+	PRIMARY KEY (ItemNumber),
+	FOREIGN KEY (Owner) REFERENCES `User`(Email)
 );
 
-
-CREATE TABLE UserItem(
-	Email varchar(50) NOT NULL,
-	ItemNumber int NOT NULL,
-	PRIMARY KEY (Email, ItemNumber),
-	FOREIGN KEY (Email) REFERENCES `User`(Email),
-	FOREIGN KEY (ItemNumber) REFERENCES Item(ItemNumber)
-);
 
 CREATE TABLE Media(
 	Name varchar(50) NOT NULL,
