@@ -1,13 +1,13 @@
 CREATE USER IF NOT EXISTS gatechUser@localhost IDENTIFIED by 'gatech123';
 
-DROP DATABASE IF EXISTS `cs6400_sm22_team_065`;
+DROP DATABASE IF EXISTS cs6400_sum22_team065;
 SET default_storage_engine=InnoDB;
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 CREATE DATABASE IF NOT EXISTS cs6400_sum22_team065
     DEFAULT CHARACTER SET utf8mb4
     DEFAULT COLLATE utf8mb4_unicode_ci;
-USE cs6400_sm22_team_065;
+USE cs6400_sum22_team065;
 
 GRANT SELECT, INSERT, UPDATE, DELETE, FILE On *.* TO 'gatechUser'@'localhost';
 GRANT ALL PRIVILEGES ON `gatechuser`.* TO 'gatechUser'@'localhost';
@@ -21,7 +21,7 @@ CREATE TABLE User (
     FirstName VARCHAR(20) NOT NULL,
     LastName VARCHAR(20) NOT NULL,
     PRIMARY KEY(Email)
-);;
+);
 
 CREATE TABLE Item (
     ItemNumber INT(16) NOT NULL,
@@ -31,7 +31,7 @@ CREATE TABLE Item (
     PRIMARY KEY(ItemNumber)
 );
 
-CREATE TABLE Condition(
+CREATE TABLE ItemCondition (
     Type VARCHAR(20) NOT NULL,
     ItemNumber INT(16) NOT NULL,
     PRIMARY KEY(Type, ItemNumber)
@@ -102,7 +102,7 @@ ALTER TABLE User
 ALTER TABLE Item
     ADD CONSTRAINT fk_ItemUser FOREIGN KEY (UserEmail) REFERENCES USER(Email);
 
-ALTER TABLE Condition
+ALTER TABLE ItemCondition
     ADD CONSTRAINT fk_ConditionItem FOREIGN KEY (ItemNumber) REFERENCES Item(ItemNumber);
 
 ALTER TABLE Trade
@@ -123,6 +123,6 @@ ALTER TABLE VideoGame
     ADD CONSTRAINT fk_VideoGamePlatform FOREIGN KEY (PlatformName) REFERENCES Platform(Name),
     ADD CONSTRAINT fk_MediaName FOREIGN KEY (MediaName) REFERENCES Media(Name);
 
-ADD TABLE ComputerGame
+ALTER TABLE ComputerGame
     AdD CONSTRAINT fk_ComputerGameItem FOREIGN KEY (ItemNumber) REFERENCES Item(ItemNumber),
     ADD CONSTRAINT fk_ComputerGamePlatform FOREIGN KEY (PlatformName) REFERENCES Platform(Name);
