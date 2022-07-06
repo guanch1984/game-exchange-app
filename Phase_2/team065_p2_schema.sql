@@ -70,7 +70,7 @@ CREATE TABLE VideoGame (
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   media ENUM ('Optical Disk', 'Game Card', 'Cartridge'),
   platform_id int(16) unsigned NOT NULL,
-  email varchar(250) NOT NULL,
+  owner_email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
   FOREIGN KEY (platform_id) REFERENCES platform(platform_id),
@@ -83,7 +83,7 @@ CREATE TABLE ComputerGame (
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   platform ENUM ('Linux', 'MacOS', 'Windows'),
-  email varchar(250) NOT NULL,
+  owner_email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
   FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
@@ -95,7 +95,7 @@ CREATE TABLE CollectibleCardGame (
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   number_of_cards int(16) unsigned NOT NULL,
-  email varchar(250) NOT NULL,
+  owner_email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
   FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
@@ -106,7 +106,7 @@ CREATE TABLE PlayingCardGame (
   title varchar(250) NOT NULL,
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
-  email varchar(250) NOT NULL,
+  owner_email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
   FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
