@@ -30,6 +30,7 @@ CREATE TABLE Address (
 
 CREATE TABLE TradePlazaUser (
   email varchar(250) NOT NULL,
+  password varchar(250) NOT NULL,
   nickname varchar(250) NOT NULL,
   first_name varchar(250) NOT NULL,
   last_name varchar(250) NOT NULL,
