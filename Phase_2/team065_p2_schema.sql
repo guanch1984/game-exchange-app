@@ -70,11 +70,11 @@ CREATE TABLE VideoGame (
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   media ENUM ('Optical Disk', 'Game Card', 'Cartridge'),
   platform_id int(16) unsigned NOT NULL,
-  owner_email varchar(250) NOT NULL,
+  email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
   FOREIGN KEY (platform_id) REFERENCES platform(platform_id),
-  FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
+  FOREIGN KEY (email) REFERENCES TradePlazaUser(email)
 );
 
 CREATE TABLE ComputerGame (
@@ -83,10 +83,10 @@ CREATE TABLE ComputerGame (
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   platform ENUM ('Linux', 'MacOS', 'Windows'),
-  owner_email varchar(250) NOT NULL,
+  email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
-  FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
+  FOREIGN KEY (email) REFERENCES TradePlazaUser(email)
 );
 
 CREATE TABLE CollectibleCardGame (
@@ -95,10 +95,10 @@ CREATE TABLE CollectibleCardGame (
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
   number_of_cards int(16) unsigned NOT NULL,
-  owner_email varchar(250) NOT NULL,
+  email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
-  FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
+  FOREIGN KEY (email) REFERENCES TradePlazaUser(email)
 );
 
 CREATE TABLE PlayingCardGame (
@@ -106,10 +106,10 @@ CREATE TABLE PlayingCardGame (
   title varchar(250) NOT NULL,
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
-  owner_email varchar(250) NOT NULL,
+  email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
-  FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
+  FOREIGN KEY (email) REFERENCES TradePlazaUser(email)
 );
 
 CREATE TABLE BoardGame (
