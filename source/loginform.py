@@ -10,6 +10,7 @@ class LoginForm(wx.Dialog):
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
         formSizer.Add(wx.StaticText(self, label="Sign In"), 0, wx.ALL, 5)
+
         tmp = wx.StaticText(self, label="_"*50)
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT, 5)
@@ -19,21 +20,33 @@ class LoginForm(wx.Dialog):
         formSizer.Add(wx.StaticText(self, label="Password"), 0, wx.ALL, 5)
         self.userPassword = wx.TextCtrl(self, value = "", size=(250,-1))
         formSizer.Add(self.userPassword, 0, wx.ALL, 5)
+
         self.tryLogin = wx.Button(self, label="Login", style=wx.BORDER_NONE)
         self.tryLogin.SetBackgroundColour('blue')
         self.tryLogin.SetForegroundColour('white')
         self.Bind(wx.EVT_BUTTON, self.LoginUser, self.tryLogin)
         formSizer.Add(self.tryLogin, 0, wx.ALL, 5)
+
         tmp = wx.StaticText(self, label="_"*50)
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT, 5)
         formSizer.Add(wx.StaticText(self, label="New User"), 0, wx.ALL, 5)
+
         self.tryReg = wx.Button(self, label="Register", style=wx.BORDER_NONE)
         self.tryReg.SetBackgroundColour('blue')
         self.tryReg.SetForegroundColour('white')
         self.Bind(wx.EVT_BUTTON, self.RegNewUser, self.tryReg)
+
+        self.tryExit = wx.Button(self, label="Exit", style=wx.BORDER_NONE)
+        self.tryExit.SetBackgroundColour('blue')
+        self.tryExit.SetForegroundColour('white')
+        self.Bind(wx.EVT_BUTTON, self.OnExit, self.tryExit)
+
         formSizer.Add(self.tryReg, 0, wx.ALL, 5)
+        formSizer.Add(self.tryExit, 0, wx.ALL, 5)
         self.SetSizerAndFit(formSizer)
+
+
    
     def LoginUser(self, event):
         self._logged_user = "test_user"
@@ -47,3 +60,6 @@ class LoginForm(wx.Dialog):
         if rf._new_user != None:
             self._logged_user = rf._new_user
             self.Close()
+
+    def OnExit(self,e):
+        self.Close(True)  # Close the frame.

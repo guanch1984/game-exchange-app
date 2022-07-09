@@ -3,14 +3,14 @@ from tkinter.ttk import Style
 import wx
 import os
 from loginform import LoginForm
-
+from tradehistory import TradeHistoryForm
 
 
 class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
         self.icon = wx.Icon()
-        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
+        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\cs6400-2022-02-Team65\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.DoLogin()
@@ -111,8 +111,10 @@ class MainWindow(wx.Frame):
     def DoSearchItem(self, event):
         pass
 
-    def DoTradeHistory(self, event):
-        pass
+    def DoTradeHistory(self,e):
+        self.Hide()
+        lf = TradeHistoryForm(self)
+        lf.ShowModal()
 
     def DoLogin(self):
         lf = LoginForm(self)
