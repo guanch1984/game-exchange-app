@@ -1,9 +1,11 @@
 import wx
+from registrationform import RegistrationForm
 
-class LoginForm(wx.Frame):
+class LoginForm(wx.Dialog):
     def __init__(self, parent):
         super().__init__(parent, title="TradePlaza-Login")
         self.SetIcon(parent.icon)
+        self._logged_user = None
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -32,10 +34,16 @@ class LoginForm(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.RegNewUser, self.tryReg)
         formSizer.Add(self.tryReg, 0, wx.ALL, 5)
         self.SetSizerAndFit(formSizer)
-        self.Show(True)
    
     def LoginUser(self, event):
-        pass
+        self._logged_user = "test_user"
+        self.Close()
 
     def RegNewUser(self, event):
-        pass
+        self.Hide()
+        rf = RegistrationForm(self.Parent)
+        rf.ShowModal()
+        
+        if rf._new_user != None:
+            self._logged_user = rf._new_user
+            self.Close()
