@@ -1,9 +1,8 @@
-from cProfile import label
-from tkinter.ttk import Style
 import wx
 import os
 from loginform import LoginForm
-from tradehistory import TradeHistoryForm
+from searchform import SearchForm
+from newlistingform import NewListingForm
 
 
 class MainWindow(wx.Frame):
@@ -103,13 +102,15 @@ class MainWindow(wx.Frame):
         self.myRank.SetLabel(msg)
 
     def DoListItem(self, event):
-        pass
+        dl = NewListingForm(self)
+        dl.ShowModal()
 
     def DoMyItems(self, event):
         pass
 
     def DoSearchItem(self, event):
-        pass
+        sf = SearchForm(self)
+        sf.ShowModal()
 
     def DoTradeHistory(self,e):
         self.Hide()
