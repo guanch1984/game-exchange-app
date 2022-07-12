@@ -9,7 +9,7 @@ class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
         self.icon = wx.Icon()
-        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\cs6400-2022-02-Team65\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
+        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.DoLogin()
@@ -122,8 +122,10 @@ class MainWindow(wx.Frame):
         lf.ShowModal()
         
         # check if login is succesfull
-        if lf._logged_user != None:
+        if lf._logged_user != None and lf._doExit == False:
             self.Show(True)
+        elif lf._doExit == True:
+            self.Close(True)
         else:
             wx.MessageBox("Login failed", style=wx.OK) 
             self.DoLogin()

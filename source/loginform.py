@@ -5,6 +5,7 @@ class LoginForm(wx.Dialog):
     def __init__(self, parent):
         super().__init__(parent, title="TradePlaza-Login")
         self.SetIcon(parent.icon)
+        self._doExit = False
         self._logged_user = None
 
         self.SetBackgroundColour('white')
@@ -60,3 +61,4 @@ class LoginForm(wx.Dialog):
 
     def OnExit(self,e):
         self.Close(True)  # Close the frame.
+        self._doExit = True
