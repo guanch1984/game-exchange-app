@@ -5,7 +5,6 @@ class LoginForm(wx.Dialog):
     def __init__(self, parent):
         super().__init__(parent, title="TradePlaza-Login")
         self.SetIcon(parent.icon)
-        self._doExit = False
         self._logged_user = None
 
         self.SetBackgroundColour('white')
@@ -21,7 +20,7 @@ class LoginForm(wx.Dialog):
         self.userPassword = wx.TextCtrl(self, value = "", size=(150,-1))
         formSizer.Add(self.userPassword, 0, wx.ALL, 5)
 
-        self.tryLogin = wx.Button(self, label="Login", style=wx.BORDER_NONE)
+        self.tryLogin = wx.Button(self, id=wx.ID_EXECUTE, label="Login", style=wx.BORDER_NONE)
         self.tryLogin.SetBackgroundColour('blue')
         self.tryLogin.SetForegroundColour('white')
         self.Bind(wx.EVT_BUTTON, self.LoginUser, self.tryLogin)
@@ -30,35 +29,31 @@ class LoginForm(wx.Dialog):
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
         formSizer.Add(wx.StaticText(self, label="New User"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
-        self.tryReg = wx.Button(self, label="Register", style=wx.BORDER_NONE)
+        self.tryReg = wx.Button(self, id=wx.ID_NEW, label="Register", style=wx.BORDER_NONE)
         self.tryReg.SetBackgroundColour('blue')
         self.tryReg.SetForegroundColour('white')
         self.Bind(wx.EVT_BUTTON, self.RegNewUser, self.tryReg)
 
-        self.tryExit = wx.Button(self, label="Exit", style=wx.BORDER_NONE)
-        self.tryExit.SetBackgroundColour('blue')
-        self.tryExit.SetForegroundColour('white')
-        self.Bind(wx.EVT_BUTTON, self.OnExit, self.tryExit)
-
         formSizer.Add(self.tryReg, 0, wx.ALL, 5)
-        formSizer.Add(self.tryExit, 0, wx.ALL, 5)
         self.SetSizerAndFit(formSizer)
-
-
    
     def LoginUser(self, event):
-        self._logged_user = "test_user"
-        self.Close()
+        user_id = self.userEmail.GetValue()
+        # query the database to check user credentials
+        validated = True
+
+        if validated:
+            self._logged_user = user_id
+            self.EndModal(wx.ID_OK)
+        else:
+            res = wx.MessageBox("Invalid user credentials. Retry?", 'Error', wx.OK|wx.CANCEL|wx.ICON_ERROR )
+            if res != wx.OK:
+                self.EndModal(wx.ID_EXIT)
 
     def RegNewUser(self, event):
         self.Hide()
         rf = RegistrationForm(self.Parent)
-        rf.ShowModal()
-        
-        if rf._new_user != None:
+        res = rf.ShowModal()
+        if res == wx.ID_OK:
             self._logged_user = rf._new_user
-            self.Close()
-
-    def OnExit(self,e):
-        self.Close(True)  # Close the frame.
-        self._doExit = True
+            self.EndModal(wx.ID_OK)

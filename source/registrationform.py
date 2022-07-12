@@ -47,5 +47,9 @@ class RegistrationForm(wx.Dialog):
         self.SetSizerAndFit(formSizer)
    
     def RegisterUser(self, event):
-        self._new_user = "test_user"
-        self.Close()
+        user_id = self.userEmail.GetValue()
+        success = True
+        # query the database to add new user
+        if success:
+            self._new_user = user_id
+            self.EndModal(wx.ID_OK)

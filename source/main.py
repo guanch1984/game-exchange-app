@@ -3,6 +3,7 @@ import os
 from loginform import LoginForm
 from searchform import SearchForm
 from newlistingform import NewListingForm
+from myitemsform import MyItemsForm
 
 
 class MainWindow(wx.Frame):
@@ -89,6 +90,9 @@ class MainWindow(wx.Frame):
         formSizer.Add(hSizer, 0, wx.EXPAND)
         self.SetSizer(formSizer)
 
+    def PopulateUserData(self, user_id):
+        pass
+
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
 
@@ -106,7 +110,8 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        pass
+        mi = MyItemsForm(self)
+        mi.ShowModal()
 
     def DoSearchItem(self, event):
         sf = SearchForm(self)
@@ -119,16 +124,13 @@ class MainWindow(wx.Frame):
 
     def DoLogin(self):
         lf = LoginForm(self)
-        lf.ShowModal()
-        
+        res = lf.ShowModal()
         # check if login is succesfull
-        if lf._logged_user != None and lf._doExit == False:
+        if res == wx.ID_OK:
+            self.PopulateUserData(lf._logged_user)
             self.Show(True)
-        elif lf._doExit == True:
-            self.Close(True)
-        else:
-            wx.MessageBox("Login failed", style=wx.OK) 
-            self.DoLogin()
+        elif res == wx.ID_EXIT:
+            self.Destroy()
 
     def DoLogout(self, event):
         self.Hide()
