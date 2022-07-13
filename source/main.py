@@ -1,10 +1,15 @@
+from winreg import QueryReflectionKey
 import wx
 import os
+import mysql.connector
+from getpass import getpass
 from loginform import LoginForm
 from searchform import SearchForm
 from newlistingform import NewListingForm
 from myitemsform import MyItemsForm
 
+#user: admin password: admin
+__SETDB = True
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -143,7 +148,63 @@ class MainWindow(wx.Frame):
     def FillForm(self):
         pass
 
+def SetupDB():
+    try:
+        with mysql.connector.connect(
+            host="localhost",
+            user=input("Enter username: "),
+            password=getpass("Enter password: "),
+        ) as connection:
+            cursor = connection.cursor()
+            schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
+            querries = schema_file.read().split(";")
+            for querry in querries:
+                if querry.strip() == "":
+                    continue
+                #print(querry)
+                cursor.execute(querry.replace(r'"', "'"))
+            cursor.execute("SHOW DATABASES")
+            for db in cursor:
+                print(db)
+
+    except mysql.connector.Error as e:
+        print(e)
+
+def PopulateDB():
+    try:
+        with mysql.connector.connect(
+            host="localhost",
+            user=input("Enter username: "),
+            password=getpass("Enter password: "),
+            database="cs6400_summer2022_team065",
+        ) as connection:
+            cursor = connection.cursor()
+            schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
+            querries = schema_file.read().split(";")
+            for querry in querries:
+                if querry.strip() == "":
+                    continue
+                if "'" in querry:
+                    continue
+                querry = querry.replace(r'"', "'")
+                cursor.execute(querry)
+            connection.commit()
+            cursor.execute("SELECT * FROM Address LIMIT 10")
+            result = cursor.fetchall()
+            for row in result:
+                print(row) 
+
+    except mysql.connector.Error as e:
+        print(e)
+
 if __name__ == '__main__':
+    # Test env
+    if __SETDB:
+        SetupDB()
+        PopulateDB()
+        
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
+
+
