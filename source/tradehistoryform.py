@@ -59,7 +59,7 @@ class TradeHistoryForm(wx.Dialog):
 
         itemsGrid.SetDefaultRowSize(30)
         itemsGrid.SetDefaultColSize(150)
-        itemsGrid.SetColSize(8, 10)
+        itemsGrid.SetColSize(8, 5)
         self.formSizer.Add(itemsGrid, 0, wx.ALL, 8)
 
     

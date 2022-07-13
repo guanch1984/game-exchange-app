@@ -16,7 +16,7 @@ class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
         self.icon = wx.Icon()
-        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
+        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.DoLogin()
