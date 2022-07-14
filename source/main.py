@@ -9,7 +9,7 @@ from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
 
 #user: admin password: admin
-__SETDB = False
+__SETDB = True
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -31,8 +31,9 @@ class MainWindow(wx.Frame):
 
     def ConnectToDb(self):
         try:
+            # how to change user as not "root"?
             self.connection =  mysql.connector.connect(host="localhost",
-                user="admin", password="admin",database="cs6400_summer2022_team065")
+                user="root", password="admin", database="cs6400_summer2022_team065")
         except mysql.connector.Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
