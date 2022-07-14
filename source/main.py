@@ -1,12 +1,13 @@
 import wx
 import os
-import mysql.connector
+from mysql.connector import MySQLConnection, Error
 from getpass import getpass
 from loginform import LoginForm
 from searchform import SearchForm
 from newlistingform import NewListingForm
 from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
+from python_mysql_dbconfig import read_db_config
 
 #user: admin password: admin
 __SETDB = False
@@ -15,8 +16,9 @@ class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
         self.Bind(wx.EVT_CLOSE, self.OnClose)
+        self._logged_user = None
         self.icon = wx.Icon()
-        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
+        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'/trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.ConnectToDb()
@@ -31,9 +33,9 @@ class MainWindow(wx.Frame):
 
     def ConnectToDb(self):
         try:
-            self.connection =  mysql.connector.connect(host="localhost",
-                user="admin", password="admin",database="cs6400_summer2022_team065")
-        except mysql.connector.Error as e:
+            db_config = read_db_config()
+            self.connection =  MySQLConnection(**db_config)
+        except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
 
@@ -112,15 +114,30 @@ class MainWindow(wx.Frame):
         formSizer.Add(hSizer, 0, wx.EXPAND)
         self.SetSizer(formSizer)
 
-    def PopulateUserData(self, user_id):
-        pass
+
 
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
 
     def SetUnacceptedTrades(self, msg):
-        self.unacceptedTrades.SetLabel(msg)
-
+        try:
+            cursor = self.connection.cursor()
+            query = "Select count(*) from Trade Inner Join (Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin Where '" + self._logged_user +  "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Proposed' GROUP BY TradeJoin.email;"
+            cursor.execute(query)
+            res = cursor.fetchall()
+            if len(res) == 0:
+                self.unacceptedTrades.SetLabel('0')
+            else:
+                self.unacceptedTrades.SetLabel(str(len(res)))
+        except Error as e:
+            self.unacceptedTrades.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+    
+    def PopulateUserData(self, user_id):
+        self._logged_user = user_id
+        self.SetUnacceptedTrades("")
+        pass
+            
     def SetResponseTime(self, msg):
         self.responseTime.SetLabel(msg)
 
@@ -163,13 +180,10 @@ class MainWindow(wx.Frame):
 
 def SetupDB():
     try:
-        with mysql.connector.connect(
-            host="localhost",
-            user=input("Enter username: "),
-            password=getpass("Enter password: "),
-        ) as connection:
+            db_config = read_db_config()
+            connection =  MySQLConnection(**db_config)
             cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
+            schema_file = open(os.getcwd() + r'/team065_p2_schema.sql', "r")
             querries = schema_file.read().split(";")
             for querry in querries:
                 if querry.strip() == "":
@@ -180,19 +194,15 @@ def SetupDB():
             for db in cursor:
                 print(db)
 
-    except mysql.connector.Error as e:
+    except Error as e:
         print(e)
 
 def PopulateDB():
     try:
-        with mysql.connector.connect(
-            host="localhost",
-            user=input("Enter username: "),
-            password=getpass("Enter password: "),
-            database="cs6400_summer2022_team065",
-        ) as connection:
+            db_config = read_db_config()
+            connection =  MySQLConnection(**db_config)
             cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
+            schema_file = open(os.getcwd() + r'/sample_data.sql', "r")
             querries = schema_file.read().split(";")
             for querry in querries:
                 if querry.strip() == "":
@@ -207,16 +217,14 @@ def PopulateDB():
             for row in result:
                 print(row) 
 
-    except mysql.connector.Error as e:
+    except Error as e:
         print(e)
 
 if __name__ == '__main__':
     # Test env
-    if __SETDB:
-        SetupDB()
-        PopulateDB()
+
+    # SetupDB()
+    # PopulateDB()
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
-
-
