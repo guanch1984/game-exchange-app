@@ -140,8 +140,8 @@ class MainWindow(wx.Frame):
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
-        lf = TradeHistoryForm(self)
-        lf.ShowModal()
+        th = TradeHistoryForm(self)
+        th.ShowModal()
 
     def DoLogin(self):
         lf = LoginForm(self, connection=self.connection)
