@@ -1,7 +1,12 @@
 import wx
+import mysql
 
 class RegistrationForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+        except:
+            self.Destroy()
         super().__init__(parent, title="TradePlaza-Registration")
         self.SetIcon(parent.icon)
         self._new_user = None
@@ -48,7 +53,25 @@ class RegistrationForm(wx.Dialog):
    
     def RegisterUser(self, event):
         user_id = self.userEmail.GetValue()
-        success = True
+        user_password = self.userPassword.GetValue()
+        user_nickname = self.userNickname.GetValue()
+        user_firstname= self.userFirstName.GetValue()
+        user_lastname = self.userLastName.GetValue()
+        user_postalcode = self.userPostalCode.GetValue()
+
+        success = False
+        try:
+            cursor = self.connection.cursor()
+            query = "INSERT INTO TradePlazaUser (email, password, nickname, first_name, last_name, postal_code) VALUES " + \
+                "(\"" + user_id + "\", \"" + user_password + "\", \"" + user_nickname + "\", \"" + user_firstname + "\", \"" + \
+                    user_lastname + "\", \"" + user_postalcode + "\")"
+            cursor.execute(query)
+            self.connection.commit()
+            success = True
+        except mysql.connector.Error as e:
+            wx.MessageBox("Error registering new user to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+            success = False
+
         # query the database to add new user
         if success:
             self._new_user = user_id
