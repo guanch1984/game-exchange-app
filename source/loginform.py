@@ -75,7 +75,7 @@ class LoginForm(wx.Dialog):
 
     def RegNewUser(self, event):
         self.Hide()
-        rf = RegistrationForm(self.Parent)
+        rf = RegistrationForm(self.Parent, connection=self.connection)
         res = rf.ShowModal()
         if res == wx.ID_OK:
             self._logged_user = rf._new_user
