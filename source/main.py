@@ -1,6 +1,7 @@
 import wx
 import os
-import mysql.connector
+# import mysql.connector
+from mysql.connector import MySQLConnection, connect, Error
 from getpass import getpass
 from loginform import LoginForm
 from searchform import SearchForm
@@ -9,7 +10,7 @@ from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
 
 #user: admin password: admin
-__SETDB = True
+__SETDB = False
 
 class MainWindow(wx.Frame):
     def __init__(self):
@@ -32,9 +33,9 @@ class MainWindow(wx.Frame):
     def ConnectToDb(self):
         try:
             # how to change user as not "root"?
-            self.connection =  mysql.connector.connect(host="localhost",
+            self.connection =  MySQLConnection(host="localhost",
                 user="root", password="admin", database="cs6400_summer2022_team065")
-        except mysql.connector.Error as e:
+        except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
 
@@ -162,60 +163,61 @@ class MainWindow(wx.Frame):
     def ClearForm(self):
         pass
 
-def SetupDB():
+def SetupDB(db_config):
+    conn = None
     try:
-        with mysql.connector.connect(
-            host="localhost",
-            user=input("Enter username: "),
-            password=getpass("Enter password: "),
-        ) as connection:
-            cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
-            querries = schema_file.read().split(";")
-            for querry in querries:
-                if querry.strip() == "":
-                    continue
-                #print(querry)
-                cursor.execute(querry.replace(r'"', "'"))
-            cursor.execute("SHOW DATABASES")
-            for db in cursor:
-                print(db)
+        print('Connecting to MySQL database...')
+        conn = MySQLConnection(**db_config)
+        # with MySQLConnection(
+        #     host="localhost",
+        #     user=input("Enter username: "),
+        #     password=getpass("Enter password: "),
+        # ) as connection:
+        cursor = conn.cursor()
+        schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
+        querries = schema_file.read().split(";")
+        for querry in querries:
+            if querry.strip() == "":
+                continue
+            cursor.execute(querry.replace(r'"', "'"))
+        cursor.execute("SHOW DATABASES")
+        for db in cursor:
+            print(db)
 
-    except mysql.connector.Error as e:
+    except Error as e:
         print(e)
 
-def PopulateDB():
+def PopulateDB(db_config, db_name):
+    db_config['database'] = db_name
+    conn = None
     try:
-        with mysql.connector.connect(
-            host="localhost",
-            user=input("Enter username: "),
-            password=getpass("Enter password: "),
-            database="cs6400_summer2022_team065",
-        ) as connection:
-            cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
-            querries = schema_file.read().split(";")
-            for querry in querries:
-                if querry.strip() == "":
-                    continue
-                if "'" in querry:
-                    continue
-                querry = querry.replace(r'"', "'")
-                cursor.execute(querry)
-            connection.commit()
-            cursor.execute("SELECT * FROM Address LIMIT 10")
-            result = cursor.fetchall()
-            for row in result:
-                print(row) 
+        conn = MySQLConnection(**db_config)
+        cursor = conn.cursor()
+        schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
+        querries = schema_file.read().split(";")
+        for querry in querries:
+            if querry.strip() == "":
+                continue
+            if "'" in querry:
+                continue
+            querry = querry.replace(r'"', "'")
+            cursor.execute(querry)
+        conn.commit()
+        cursor.execute("SELECT * FROM Address LIMIT 10")
+        result = cursor.fetchall()
+        for row in result:
+            print(row) 
 
-    except mysql.connector.Error as e:
+    except Error as e:
         print(e)
 
 if __name__ == '__main__':
     # Test env
     if __SETDB:
-        SetupDB()
-        PopulateDB()
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin'}
+        db_name = 'cs6400_summer2022_team065'
+        SetupDB(db_config)
+        PopulateDB(db_config, db_name)
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
