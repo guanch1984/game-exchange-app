@@ -1,19 +1,41 @@
-from cProfile import label
-from tkinter.ttk import Style
 import wx
 import os
+import mysql.connector
+from getpass import getpass
 from loginform import LoginForm
+from searchform import SearchForm
+from newlistingform import NewListingForm
+from myitemsform import MyItemsForm
+from tradehistoryform import TradeHistoryForm
 
-
+#user: admin password: admin
+__SETDB = False
 
 class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.icon = wx.Icon()
         self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
+        self.ConnectToDb()
         self.DoLogin()
+
+    def OnClose(self, event):
+        try:
+            self.connection.close()
+            self.Destroy()
+        except:
+            pass
+
+    def ConnectToDb(self):
+        try:
+            self.connection =  mysql.connector.connect(host="localhost",
+                user="admin", password="admin",database="cs6400_summer2022_team065")
+        except mysql.connector.Error as e:
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+            self.Close()
 
     def RenderMainMenu(self):
         self.SetBackgroundColour('white')
@@ -90,6 +112,9 @@ class MainWindow(wx.Frame):
         formSizer.Add(hSizer, 0, wx.EXPAND)
         self.SetSizer(formSizer)
 
+    def PopulateUserData(self, user_id):
+        pass
+
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
 
@@ -103,27 +128,30 @@ class MainWindow(wx.Frame):
         self.myRank.SetLabel(msg)
 
     def DoListItem(self, event):
-        pass
+        dl = NewListingForm(self)
+        dl.ShowModal()
 
     def DoMyItems(self, event):
-        pass
+        mi = MyItemsForm(self)
+        mi.ShowModal()
 
     def DoSearchItem(self, event):
-        pass
+        sf = SearchForm(self)
+        sf.ShowModal()
 
-    def DoTradeHistory(self, event):
-        pass
+    def DoTradeHistory(self,event):
+        th = TradeHistoryForm(self)
+        th.ShowModal()
 
     def DoLogin(self):
-        lf = LoginForm(self)
-        lf.ShowModal()
-        
+        lf = LoginForm(self, connection=self.connection)
+        res = lf.ShowModal()
         # check if login is succesfull
-        if lf._logged_user != None:
+        if res == wx.ID_OK:
+            self.PopulateUserData(lf._logged_user)
             self.Show(True)
         else:
-            wx.MessageBox("Login failed", style=wx.OK) 
-            self.DoLogin()
+            self.Close()
 
     def DoLogout(self, event):
         self.Hide()
@@ -133,10 +161,62 @@ class MainWindow(wx.Frame):
     def ClearForm(self):
         pass
 
-    def FillForm(self):
-        pass
+def SetupDB():
+    try:
+        with mysql.connector.connect(
+            host="localhost",
+            user=input("Enter username: "),
+            password=getpass("Enter password: "),
+        ) as connection:
+            cursor = connection.cursor()
+            schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
+            querries = schema_file.read().split(";")
+            for querry in querries:
+                if querry.strip() == "":
+                    continue
+                #print(querry)
+                cursor.execute(querry.replace(r'"', "'"))
+            cursor.execute("SHOW DATABASES")
+            for db in cursor:
+                print(db)
+
+    except mysql.connector.Error as e:
+        print(e)
+
+def PopulateDB():
+    try:
+        with mysql.connector.connect(
+            host="localhost",
+            user=input("Enter username: "),
+            password=getpass("Enter password: "),
+            database="cs6400_summer2022_team065",
+        ) as connection:
+            cursor = connection.cursor()
+            schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
+            querries = schema_file.read().split(";")
+            for querry in querries:
+                if querry.strip() == "":
+                    continue
+                if "'" in querry:
+                    continue
+                querry = querry.replace(r'"', "'")
+                cursor.execute(querry)
+            connection.commit()
+            cursor.execute("SELECT * FROM Address LIMIT 10")
+            result = cursor.fetchall()
+            for row in result:
+                print(row) 
+
+    except mysql.connector.Error as e:
+        print(e)
 
 if __name__ == '__main__':
+    # Test env
+    if __SETDB:
+        SetupDB()
+        PopulateDB()
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
+
+

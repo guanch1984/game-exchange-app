@@ -10,33 +10,30 @@ class RegistrationForm(wx.Dialog):
         formSizer = wx.BoxSizer(wx.VERTICAL)
         tmp = wx.StaticText(self, label="Registration")
         formSizer.Add(tmp, 0, wx.LEFT, 5)
-        tmp = wx.StaticText(self, label="_"*125)
+        tmp = wx.StaticText(self, label="_"*60)
         tmp.SetForegroundColour('blue')
-        formSizer.Add(tmp, 0, wx.LEFT, 5)
+        formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
 
-        fgs = wx.FlexGridSizer(6, 4, 5, 5)
-        fgs.Add(wx.StaticText(self, label="Email"), 0, wx.ALL, 5)
-        self.userEmail = wx.TextCtrl(self, value = "", size=(250,-1))
-        fgs.Add(self.userEmail, 0, wx.ALL, 5)
-
-        fgs.Add(wx.StaticText(self, label="First Name"), 0, wx.ALL, 5)
-        self.userFirstName = wx.TextCtrl(self, value = "", size=(250,-1))
+        fgs = wx.FlexGridSizer(12, 2, 5, 5)
+        fgs.Add(wx.StaticText(self, label="Email"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        fgs.Add(wx.StaticText(self, label="First Name"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        self.userEmail = wx.TextCtrl(self, value = "", size=(150,-1))
+        fgs.Add(self.userEmail, 0, wx.ALL, 5)        
+        self.userFirstName = wx.TextCtrl(self, value = "", size=(150,-1))
         fgs.Add(self.userFirstName, 0, wx.ALL, 5)
 
-        fgs.Add(wx.StaticText(self, label="Password"), 0, wx.ALL, 5)
-        self.userPassword = wx.TextCtrl(self, value = "", size=(250,-1))
+        fgs.Add(wx.StaticText(self, label="Password"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        fgs.Add(wx.StaticText(self, label="Last Name"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        self.userPassword = wx.TextCtrl(self, value = "", size=(150,-1))
         fgs.Add(self.userPassword, 0, wx.ALL, 5)
-
-        fgs.Add(wx.StaticText(self, label="Last Name"), 0, wx.ALL, 5)
-        self.userLastName = wx.TextCtrl(self, value = "", size=(250,-1))
+        self.userLastName = wx.TextCtrl(self, value = "", size=(150,-1))
         fgs.Add(self.userLastName, 0, wx.ALL, 5)
 
-        fgs.Add(wx.StaticText(self, label="Nickname"), 0, wx.ALL, 5)
-        self.userNickname = wx.TextCtrl(self, value = "", size=(250,-1))
+        fgs.Add(wx.StaticText(self, label="Nickname"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        fgs.Add(wx.StaticText(self, label="Postal Code"), 0, wx.LEFT|wx.RIGHT|wx.TOP, 5)
+        self.userNickname = wx.TextCtrl(self, value = "", size=(150,-1))
         fgs.Add(self.userNickname, 0, wx.ALL, 5)
-
-        fgs.Add(wx.StaticText(self, label="Postal Code"), 0, wx.ALL, 5)
-        self.userPostalCode = wx.TextCtrl(self, value = "", size=(250,-1))
+        self.userPostalCode = wx.TextCtrl(self, value = "", size=(150,-1))
         fgs.Add(self.userPostalCode, 0, wx.ALL, 5)
 
         formSizer.Add(fgs, 0)
@@ -50,5 +47,9 @@ class RegistrationForm(wx.Dialog):
         self.SetSizerAndFit(formSizer)
    
     def RegisterUser(self, event):
-        self._new_user = "test_user"
-        self.Close()
+        user_id = self.userEmail.GetValue()
+        success = True
+        # query the database to add new user
+        if success:
+            self._new_user = user_id
+            self.EndModal(wx.ID_OK)
