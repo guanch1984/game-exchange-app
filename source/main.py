@@ -15,6 +15,7 @@ __SETDB = False
 class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
+        self.connection = None
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.icon = wx.Icon()
         self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
@@ -31,10 +32,17 @@ class MainWindow(wx.Frame):
             pass
 
     def ConnectToDb(self):
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
         try:
-            # how to change user as not "root"?
-            self.connection =  MySQLConnection(host="localhost",
-                user="root", password="admin", database="cs6400_summer2022_team065")
+            # need to request put in 
+            self.connection = MySQLConnection(**db_config)
+            self.cursor = self.connection.cursor()
+
+            self.cursor.execute("SELECT * FROM TradePlazaUser LIMIT 10")
+            result = self.cursor.fetchall()
+            for row in result:
+                print(row) 
+
         except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
@@ -134,7 +142,7 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self)
+        mi = MyItemsForm(self, connection=self.connection, user_email = self.user_email)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
@@ -147,13 +155,21 @@ class MainWindow(wx.Frame):
 
     def DoLogin(self):
         lf = LoginForm(self, connection=self.connection)
+        
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
             self.PopulateUserData(lf._logged_user)
+            print(lf._logged_user)
             self.Show(True)
         else:
             self.Close()
+        user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
+        query_tuple = (lf._logged_user, lf._logged_user)
+        self.cursor.execute(user_email_query, query_tuple)
+        result = self.cursor.fetchall()
+        self.user_email = result[0][0]
+        # print(self.user_email)
 
     def DoLogout(self, event):
         self.Hide()
@@ -180,6 +196,7 @@ def SetupDB(db_config):
             if querry.strip() == "":
                 continue
             cursor.execute(querry.replace(r'"', "'"))
+        print('Successfully setup database!')
         cursor.execute("SHOW DATABASES")
         for db in cursor:
             print(db)
@@ -195,6 +212,7 @@ def PopulateDB(db_config, db_name):
         cursor = conn.cursor()
         schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
         querries = schema_file.read().split(";")
+        
         for querry in querries:
             if querry.strip() == "":
                 continue
@@ -203,6 +221,7 @@ def PopulateDB(db_config, db_name):
             querry = querry.replace(r'"', "'")
             cursor.execute(querry)
         conn.commit()
+        print('Successfully populated database!')
         cursor.execute("SELECT * FROM Address LIMIT 10")
         result = cursor.fetchall()
         for row in result:
@@ -214,6 +233,7 @@ def PopulateDB(db_config, db_name):
 if __name__ == '__main__':
     # Test env
     if __SETDB:
+    # if 1:
         db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin'}
         db_name = 'cs6400_summer2022_team065'
         SetupDB(db_config)

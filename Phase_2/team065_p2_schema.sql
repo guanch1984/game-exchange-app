@@ -117,8 +117,8 @@ CREATE TABLE BoardGame (
   title varchar(250) NOT NULL,
   description varchar(250) NOT NULL,
   game_condition ENUM ('Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing'),
-  owner_email varchar(250) NOT NULL,
+  email varchar(250) NOT NULL,
   PRIMARY KEY (item_number), 
   FOREIGN KEY (item_number) REFERENCES Item(item_number),
-  FOREIGN KEY (owner_email) REFERENCES TradePlazaUser(email)
+  FOREIGN KEY (email) REFERENCES TradePlazaUser(email)
 );
