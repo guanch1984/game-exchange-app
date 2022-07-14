@@ -1,8 +1,13 @@
 import wx
+import mysql
 from registrationform import RegistrationForm
 
 class LoginForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+        except:
+            self.Destroy()
         super().__init__(parent, title="TradePlaza-Login")
         self.SetIcon(parent.icon)
         self._logged_user = None
@@ -37,10 +42,28 @@ class LoginForm(wx.Dialog):
         formSizer.Add(self.tryReg, 0, wx.ALL, 5)
         self.SetSizerAndFit(formSizer)
    
+    def ValidateUser(self, user_id, user_password):
+        try:
+            cursor = self.connection.cursor()
+            query = "SELECT email from TradePlazaUser where (TradePlazaUser.email=" + "\"" + user_id  + \
+            "\"" + " or TradePlazaUser.nickname=" + "\"" + user_id  + "\"" + ") and TradePlazaUser.password=" + "\"" + user_password  + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            if len(res) == 1:
+                return True
+            else:
+                return False
+        except mysql.connector.Error as e:
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+            return False
+
+
     def LoginUser(self, event):
         user_id = self.userEmail.GetValue()
-        # query the database to check user credentials
-        validated = True
+        user_password = self.userPassword.GetValue()
+        if user_id == "" or user_password == "":
+            return
+        validated = self.ValidateUser(user_id, user_password)
 
         if validated:
             self._logged_user = user_id

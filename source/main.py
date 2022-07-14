@@ -1,4 +1,3 @@
-from winreg import QueryReflectionKey
 import wx
 import os
 import mysql.connector
@@ -10,16 +9,33 @@ from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
 
 #user: admin password: admin
-__SETDB = True
+__SETDB = False
 
 class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.icon = wx.Icon()
         self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
+        self.ConnectToDb()
         self.DoLogin()
+
+    def OnClose(self, event):
+        try:
+            self.connection.close()
+            self.Destroy()
+        except:
+            pass
+
+    def ConnectToDb(self):
+        try:
+            self.connection =  mysql.connector.connect(host="localhost",
+                user="admin", password="admin",database="cs6400_summer2022_team065")
+        except mysql.connector.Error as e:
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+            self.Close()
 
     def RenderMainMenu(self):
         self.SetBackgroundColour('white')
@@ -128,14 +144,14 @@ class MainWindow(wx.Frame):
         lf.ShowModal()
 
     def DoLogin(self):
-        lf = LoginForm(self)
+        lf = LoginForm(self, connection=self.connection)
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
             self.PopulateUserData(lf._logged_user)
             self.Show(True)
-        elif res == wx.ID_EXIT:
-            self.Destroy()
+        else:
+            self.Close()
 
     def DoLogout(self, event):
         self.Hide()
@@ -143,9 +159,6 @@ class MainWindow(wx.Frame):
         self.DoLogin()
 
     def ClearForm(self):
-        pass
-
-    def FillForm(self):
         pass
 
 def SetupDB():
@@ -202,7 +215,6 @@ if __name__ == '__main__':
     if __SETDB:
         SetupDB()
         PopulateDB()
-        
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
