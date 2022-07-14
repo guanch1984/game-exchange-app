@@ -49,14 +49,12 @@ class MyItemsForm(wx.Dialog):
 
     def AddItems(self):
         # query the database to get item list
-        # my_items_query = '''select title, game_condition, description from BoardGame where email = "%s"
-        #     union select title, game_condition, description from PlayingCardGame where email = "%s"
-        #     union select title, game_condition, description from ComputerGame where email = "%s"
-        #     union select title, game_condition, description from CollectibleCardGame where email = "%s"
-        #     union select title, game_condition, description from VideoGame where email = "%s"
-        #     '''
-        my_items_query = 'select title, game_condition, description from ComputerGame where email = %(user_email)s'
-        # query_tuple = (self.user_email,self.user_email,self.user_email,self.user_email,self.user_email)
+        my_items_query = '''select title, game_condition, description from BoardGame where email = %(user_email)s
+            union select title, game_condition, description from PlayingCardGame where email = %(user_email)s
+            union select title, game_condition, description from ComputerGame where email = %(user_email)s
+            union select title, game_condition, description from CollectibleCardGame where email = %(user_email)s
+            union select title, game_condition, description from VideoGame where email = %(user_email)s
+            '''
         query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
         iterator = cursor.execute(my_items_query, query_dict)
