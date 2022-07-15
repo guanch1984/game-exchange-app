@@ -215,7 +215,7 @@ SELECT
     la.description,
     la.Response_Time,
     la.user_rank,
-    3958.75 * 2 * (ATAN2(SQRT(haversine_a), SQRT(1 - haversine_a))) AS distance
+    Round(3958.75 * 2 * (ATAN2(SQRT(haversine_a), SQRT(1 - haversine_a))),2) AS distance
 FROM
     lat_lon la
     LEFT JOIN haversine h ON (
