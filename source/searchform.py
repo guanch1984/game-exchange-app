@@ -1,7 +1,11 @@
 import wx
 
 class SearchForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+        except:
+            self.Destroy()
         super().__init__(parent, title="TradePlaza-Search")
         self.SetIcon(parent.icon)
         self._logged_user = None

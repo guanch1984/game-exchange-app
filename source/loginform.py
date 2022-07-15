@@ -1,5 +1,5 @@
 import wx
-import mysql
+from mysql.connector import Error
 from registrationform import RegistrationForm
 
 class LoginForm(wx.Dialog):
@@ -53,7 +53,7 @@ class LoginForm(wx.Dialog):
                 return True
             else:
                 return False
-        except mysql.connector.Error as e:
+        except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             return False
 

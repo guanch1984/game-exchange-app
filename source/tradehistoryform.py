@@ -2,7 +2,12 @@ import wx
 import wx.grid
 
 class TradeHistoryForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+            self.user_id = kwargs.pop("user_id")
+        except:
+            self.Destroy()
         super().__init__(parent, title="TradePlaza-Trade History")
         self.SetIcon(parent.icon)
         self._new_user = None
