@@ -34,18 +34,30 @@ class TradeHistoryForm(wx.Dialog):
                 SUM( IF (trade_status ="REJECT", 1, 0)) AS Rejected,
                 FORMAT( SUM( IF (trade_status ="REJECT", 1, 0)) / COUNT(*) , 'P1') AS "Rejected %”"
         FROM (
-            SELECT trade_status, IF(T.proposer_item_number=I.item_number, "Proposer", "Counterparty") AS my_role
-            FROM Trade AS T INNER JOIN (
-                SELECT item_number, email from BoardGame where email = %(user_email)s
+            SELECT trade_status, IF(PI.email= %(user_email)s, "Proposer", "Counterparty") AS my_role
+            FROM Trade AS T left JOIN (
+                SELECT item_number, email from BoardGame
                 UNION
-                SELECT item_number, email from PlayingCardGame where email = %(user_email)s
+                SELECT item_number, email from PlayingCardGame
                 UNION
-                SELECT item_number, email from CollectibleCardGame where email = %(user_email)s
+                SELECT item_number, email from CollectibleCardGame
                 UNION
-                SELECT item_number, email from ComputerGame where email = %(user_email)s
+                SELECT item_number, email from ComputerGame
                 UNION
-                SELECT item_number, email from VideoGame where email = %(user_email)s
-                ) AS I ON T.proposer_item_number = I.item_number OR T.counter_party_item_number=I.item_number
+                SELECT item_number, email from VideoGame
+                ) AS PI ON T.proposer_item_number = PI.item_number 
+                left JOIN (
+                SELECT item_number, email from BoardGame
+                UNION
+                SELECT item_number, email from PlayingCardGame
+                UNION
+                SELECT item_number, email from CollectibleCardGame
+                UNION
+                SELECT item_number, email from ComputerGame
+                UNION
+                SELECT item_number, email from VideoGame
+                ) as CI on T.counter_party_item_number=CI.item_number
+            where PI.email= %(user_email)s or CI.email= %(user_email)s
             ) AS TD
         GROUP BY my_role
         '''
@@ -53,14 +65,9 @@ class TradeHistoryForm(wx.Dialog):
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_summary_query, query_dict)
         result = cursor.fetchall()
-        if result:
-            for row in result:
-                print(row)
-        else:
-            print('no result found!')       
-
+        n = len(result)
         countGrid = wx.grid.Grid(self, wx.ID_ANY)
-        countGrid.CreateGrid(1, 5)
+        countGrid.CreateGrid(n, 5)
         countGrid.HideRowLabels()
         countGrid.SetColLabelValue(0, "My role")
         countGrid.SetColLabelValue(1, "Total")
@@ -68,14 +75,67 @@ class TradeHistoryForm(wx.Dialog):
         countGrid.SetColLabelValue(3, "Rejected")
         countGrid.SetColLabelValue(4, "Rejected %")
 
+        if result:
+            for i in range(n):
+                for j in range(5):
+                    if j==4 and float(result[i][j])>=0.5:
+                        countGrid.SetBackgroundColour(i,j,wx.Colour(red))
+                    else:
+                        countGrid.SetCellValue(i,j, str(result[i][j]))
+        else:
+            print('no result found!')      
+
         countGrid.SetDefaultRowSize(30)
         countGrid.SetDefaultColSize(100)
         self.formSizer.Add(countGrid, 0, wx.ALL, 4)
 
     def AddDetail(self):
         # query the database to get trade list
+        trade_detail_query = '''
+        SELECT date_format(proposed_date, '%m/%d/%Y'), 
+            date_format(accept_reject_date, '%m/%d/%Y'),
+            trade_status,
+            IF(accept_reject_date is NULL, timestampdiff(DAY, proposed_date, current_date()),
+                timestampdiff(DAY,proposed_date,accept_reject_date)) AS response_time,
+            IF(PI.email=%(user_email)s, "Proposer", "Counterparty") AS my_role,
+            PI.title AS propsed_item,
+            CI.title AS desired_item,
+            IF(PI.email=%(user_email)s, CU.nickname, PU.nickname) AS other_user
+        FROM Trade AS T left JOIN (
+            SELECT item_number, email, title from BoardGame
+            UNION
+            SELECT item_number, email, title from PlayingCardGame
+            UNION
+            SELECT item_number, email, title from CollectibleCardGame
+            UNION
+            SELECT item_number, email, title from ComputerGame
+            UNION
+            SELECT item_number, email, title from VideoGame
+            ) AS PI ON T.proposer_item_number = PI.item_number 
+            left JOIN (
+            SELECT item_number, email, title from BoardGame
+            UNION
+            SELECT item_number, email, title from PlayingCardGame
+            UNION
+            SELECT item_number, email, title from CollectibleCardGame
+            UNION
+            SELECT item_number, email, title from ComputerGame
+            UNION
+            SELECT item_number, email, title from VideoGame
+            ) as CI on T.counter_party_item_number=CI.item_number
+            left join TradePlazaUser as PU on PI.email=PU.email
+            left join TradePlazaUser as CU on CI.email=CU.email
+        WHERE PI.email= %(user_email)s or CI.email= %(user_email)s
+        ORDER BY proposed_date DESC, response_time DESC;
+        '''
+        query_dict = {'user_email':self.user_email}
+        cursor = self.connection.cursor()
+        iterator = cursor.execute(trade_detail_query, query_dict)
+        result = cursor.fetchall()
+        n = len(result)
+
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
-        itemsGrid.CreateGrid(1, 9)
+        itemsGrid.CreateGrid(n, 9)
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Proposed\nDate")
         itemsGrid.SetColLabelValue(1, "Accepted/\nRejected Date")
@@ -86,6 +146,17 @@ class TradeHistoryForm(wx.Dialog):
         itemsGrid.SetColLabelValue(6, "Desired item")
         itemsGrid.SetColLabelValue(7, "Other User")
         itemsGrid.SetColLabelValue(8, "")
+
+        if result:
+            for i in range(n):
+                for j in range(9):
+                    if j ==8 :
+                        itemsGrid.SetCellValue(i,j, "Detail")
+                        itemsGrid.SetCellTextColour(i,j, "blue")
+                    else:
+                        itemsGrid.SetCellValue(i,j, str(result[i][j]))
+        else:
+            print('no result found!')  
 
         itemsGrid.SetDefaultRowSize(30)
         itemsGrid.SetDefaultColSize(150)
