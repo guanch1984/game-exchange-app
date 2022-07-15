@@ -74,7 +74,7 @@ class LoginForm(wx.Dialog):
                 self.EndModal(wx.ID_EXIT)
 
     def RegNewUser(self, event):
-        self.Hide()
+        # self.Hide()
         rf = RegistrationForm(self.Parent, connection=self.connection)
         res = rf.ShowModal()
         if res == wx.ID_OK:

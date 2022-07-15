@@ -9,9 +9,11 @@ class MyItemsForm(wx.Dialog):
             self.user_id = kwargs.pop("user_id")
         except:
             self.Destroy()
+
         super().__init__(parent, title="TradePlaza-My Items")
         self.SetIcon(parent.icon)
         self._new_user = None
+        self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -84,6 +86,21 @@ class MyItemsForm(wx.Dialog):
 
     def AddItems(self):
         # query the database to get item list
+        my_items_query = '''select title, game_condition, description from BoardGame where email = %(user_email)s
+            union select title, game_condition, description from PlayingCardGame where email = %(user_email)s
+            union select title, game_condition, description from ComputerGame where email = %(user_email)s
+            union select title, game_condition, description from CollectibleCardGame where email = %(user_email)s
+            union select title, game_condition, description from VideoGame where email = %(user_email)s
+            '''
+        query_dict = {'user_email':self.user_email}
+        cursor = self.connection.cursor()
+        iterator = cursor.execute(my_items_query, query_dict)
+        result = cursor.fetchall()
+        if result:
+            for row in result:
+                print(row)
+        else:
+            print('no result found!')
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
         itemsGrid.CreateGrid(1, 6)
         itemsGrid.HideRowLabels()
@@ -98,6 +115,9 @@ class MyItemsForm(wx.Dialog):
         itemsGrid.SetDefaultColSize(150)
         itemsGrid.SetColSize(4, 300)
         itemsGrid.SetColSize(5, 60)
+
+
+
         self.formSizer.Add(itemsGrid, 0, wx.ALL, 5)
 
     
