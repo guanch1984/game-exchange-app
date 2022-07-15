@@ -1,6 +1,5 @@
 import wx
 import os
-# import mysql.connector
 from mysql.connector import MySQLConnection, connect, Error
 from getpass import getpass
 from loginform import LoginForm
@@ -34,15 +33,7 @@ class MainWindow(wx.Frame):
     def ConnectToDb(self):
         db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
         try:
-            # need to request put in 
             self.connection = MySQLConnection(**db_config)
-            self.cursor = self.connection.cursor()
-
-            self.cursor.execute("SELECT * FROM TradePlazaUser LIMIT 10")
-            result = self.cursor.fetchall()
-            for row in result:
-                print(row) 
-
         except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
@@ -138,7 +129,7 @@ class MainWindow(wx.Frame):
         self.myRank.SetLabel(msg)
 
     def DoListItem(self, event):
-        dl = NewListingForm(self)
+        dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
         dl.ShowModal()
 
     def DoMyItems(self, event):
@@ -146,7 +137,7 @@ class MainWindow(wx.Frame):
         mi.ShowModal()
 
     def DoSearchItem(self, event):
-        sf = SearchForm(self)
+        sf = SearchForm(self, connection=self.connection)
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
@@ -159,6 +150,7 @@ class MainWindow(wx.Frame):
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
+            self.logged_user = lf._logged_user
             self.PopulateUserData(lf._logged_user)
             print(lf._logged_user)
             self.Show(True)
@@ -172,6 +164,7 @@ class MainWindow(wx.Frame):
         # print(self.user_email)
 
     def DoLogout(self, event):
+        self.logged_user == None
         self.Hide()
         self.ClearForm()
         self.DoLogin()
@@ -196,11 +189,6 @@ def SetupDB(db_config):
             if querry.strip() == "":
                 continue
             cursor.execute(querry.replace(r'"', "'"))
-        print('Successfully setup database!')
-        cursor.execute("SHOW DATABASES")
-        for db in cursor:
-            print(db)
-
     except Error as e:
         print(e)
 
