@@ -2,10 +2,16 @@ import wx
 import wx.grid
 
 class TradeHistoryForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+        except:
+            self.Destroy()
+
         super().__init__(parent, title="TradePlaza-Trade History")
         self.SetIcon(parent.icon)
         self._new_user = None
+        self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -17,18 +23,42 @@ class TradeHistoryForm(wx.Dialog):
         formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
 
         self.AddSummary()
-
-        # tmp = wx.StaticText(self, label="My Items")
-        # formSizer.Add(tmp, 0, wx.LEFT, 5)
-        # tmp = wx.StaticText(self, label="_"*80)
-        # tmp.SetForegroundColour('blue')
-        # formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
-        
         self.AddDetail()
         self.SetSizerAndFit(formSizer)
 
     def AddSummary(self):
         # query the database to get trade statistic summary
+        trade_summary_query = '''
+        SELECT my_role, COUNT(*) AS Total, 
+                SUM( IF (trade_status="ACCEPT", 1, 0)) AS Accepted,
+                SUM( IF (trade_status ="REJECT", 1, 0)) AS Rejected,
+                FORMAT( SUM( IF (trade_status ="REJECT", 1, 0)) / COUNT(*) , 'P1') AS "Rejected %”"
+        FROM (
+            SELECT trade_status, IF(T.proposer_item_number=I.item_number, "Proposer", "Counterparty") AS my_role
+            FROM Trade AS T INNER JOIN (
+                SELECT item_number, email from BoardGame where email = %(user_email)s
+                UNION
+                SELECT item_number, email from PlayingCardGame where email = %(user_email)s
+                UNION
+                SELECT item_number, email from CollectibleCardGame where email = %(user_email)s
+                UNION
+                SELECT item_number, email from ComputerGame where email = %(user_email)s
+                UNION
+                SELECT item_number, email from VideoGame where email = %(user_email)s
+                ) AS I ON T.proposer_item_number = I.item_number OR T.counter_party_item_number=I.item_number
+            ) AS TD
+        GROUP BY my_role
+        '''
+        query_dict = {'user_email':self.user_email}
+        cursor = self.connection.cursor()
+        iterator = cursor.execute(trade_summary_query, query_dict)
+        result = cursor.fetchall()
+        if result:
+            for row in result:
+                print(row)
+        else:
+            print('no result found!')       
+
         countGrid = wx.grid.Grid(self, wx.ID_ANY)
         countGrid.CreateGrid(1, 5)
         countGrid.HideRowLabels()

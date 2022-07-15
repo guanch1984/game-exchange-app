@@ -7,8 +7,10 @@ class MyItemsForm(wx.Dialog):
             self.connection = kwargs.pop("connection")
         except:
             self.Destroy()
+            
         super().__init__(parent, title="TradePlaza-My Items")
         self.SetIcon(parent.icon)
+        self._new_user = None
         self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
@@ -59,7 +61,6 @@ class MyItemsForm(wx.Dialog):
         cursor = self.connection.cursor()
         iterator = cursor.execute(my_items_query, query_dict)
         result = cursor.fetchall()
-        print(self.user_email)
         if result:
             for row in result:
                 print(row)
