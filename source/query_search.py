@@ -262,5 +262,4 @@ def within_miles_search(user_email, miles):
     """.format(miles=miles)
 
     query = parent_query.format(user_email=user_email,where_clause=where_clause)
-    return queryccccccjeikdckbfgurgeldnjgvickngutfnbhchrhgul
-    
+    return query
