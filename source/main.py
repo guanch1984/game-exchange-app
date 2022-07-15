@@ -134,7 +134,7 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self, connection=self.connection, user_email = self.user_email)
+        mi = MyItemsForm(self, connection=self.connection, user_id = self.user_email)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
@@ -162,7 +162,7 @@ class MainWindow(wx.Frame):
         self.cursor.execute(user_email_query, query_tuple)
         result = self.cursor.fetchall()
         self.user_email = result[0][0]
-        # print(self.user_email)
+        
 
     def DoLogout(self, event):
         self.logged_user == None

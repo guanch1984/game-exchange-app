@@ -66,6 +66,7 @@ class TradeHistoryForm(wx.Dialog):
         iterator = cursor.execute(trade_summary_query, query_dict)
         result = cursor.fetchall()
         n = len(result)
+        
         countGrid = wx.grid.Grid(self, wx.ID_ANY)
         countGrid.CreateGrid(n, 5)
 

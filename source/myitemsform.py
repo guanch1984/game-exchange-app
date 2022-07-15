@@ -13,7 +13,6 @@ class MyItemsForm(wx.Dialog):
         super().__init__(parent, title="TradePlaza-My Items")
         self.SetIcon(parent.icon)
         self._new_user = None
-        self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -85,23 +84,20 @@ class MyItemsForm(wx.Dialog):
 
     def AddItems(self):
         # query the database to get item list
-        my_items_query = '''select title, game_condition, description from BoardGame where email = %(user_email)s
-            union select title, game_condition, description from PlayingCardGame where email = %(user_email)s
-            union select title, game_condition, description from ComputerGame where email = %(user_email)s
-            union select title, game_condition, description from CollectibleCardGame where email = %(user_email)s
-            union select title, game_condition, description from VideoGame where email = %(user_email)s
+        my_items_query = '''select item_number, "Board Game" as game_type, title, game_condition, description from BoardGame where email = %(user_email)s
+            union select item_number, "PlayingCardGame" as game_type,title, game_condition, description from PlayingCardGame where email = %(user_email)s
+            union select item_number, "ComputerGame" as game_type,title, game_condition, description from ComputerGame where email = %(user_email)s
+            union select item_number, "CollectibleCardGame" as game_type,title, game_condition, description from CollectibleCardGame where email = %(user_email)s
+            union select item_number, "VideoGame" as game_type, title, game_condition, description from VideoGame where email = %(user_email)s
             '''
-        query_dict = {'user_email':self.user_email}
+        query_dict = {'user_email':self.user_id}
         cursor = self.connection.cursor()
         iterator = cursor.execute(my_items_query, query_dict)
         result = cursor.fetchall()
-        if result:
-            for row in result:
-                print(row)
-        else:
-            print('no result found!')
+        n = len(result)
+        
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
-        itemsGrid.CreateGrid(1, 6)
+        itemsGrid.CreateGrid(n, 6)
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Item #")
         itemsGrid.SetColLabelValue(1, "Game Type")
@@ -109,6 +105,18 @@ class MyItemsForm(wx.Dialog):
         itemsGrid.SetColLabelValue(3, "Condition")
         itemsGrid.SetColLabelValue(4, "Description")
         itemsGrid.SetColLabelValue(5, "")
+        underlineFont = wx.Font(8, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True)
+        if result:
+            for i in range(n):
+                for j in range(6):
+                    if j ==5 :
+                        itemsGrid.SetCellValue(i,j, "Detail")
+                        itemsGrid.SetCellTextColour(i,j, "blue")
+                        itemsGrid.SetCellFont(i,j, underlineFont)
+                    else:
+                        itemsGrid.SetCellValue(i,j, str(result[i][j]))
+        else:
+            print('no result found!')   
 
         itemsGrid.SetDefaultRowSize(30)
         itemsGrid.SetDefaultColSize(150)
