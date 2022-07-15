@@ -12,7 +12,6 @@ class TradeHistoryForm(wx.Dialog):
         super().__init__(parent, title="TradePlaza-Trade History")
         self.SetIcon(parent.icon)
         self._new_user = None
-        self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -62,7 +61,7 @@ class TradeHistoryForm(wx.Dialog):
             ) AS TD
         GROUP BY my_role
         '''
-        query_dict = {'user_email':self.user_email}
+        query_dict = {'user_email':self.user_id}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_summary_query, query_dict)
         result = cursor.fetchall()
@@ -143,7 +142,7 @@ class TradeHistoryForm(wx.Dialog):
         WHERE PI.email= %(user_email)s or CI.email= %(user_email)s
         ORDER BY proposed_date DESC, response_time DESC;
         '''
-        query_dict = {'user_email':self.user_email}
+        query_dict = {'user_email':self.user_id}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_detail_query, query_dict)
         result = cursor.fetchall()

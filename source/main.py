@@ -34,6 +34,7 @@ class MainWindow(wx.Frame):
         db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
         try:
             self.connection = MySQLConnection(**db_config)
+            self.cursor = self.connection.cursor()
         except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
@@ -141,7 +142,7 @@ class MainWindow(wx.Frame):
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
-        th = TradeHistoryForm(self, connection=self.connection, user_email = self.user_email)
+        th = TradeHistoryForm(self, connection=self.connection, user_id = self.user_email)
         th.ShowModal()
 
     def DoLogin(self):
