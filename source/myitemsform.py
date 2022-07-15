@@ -7,7 +7,7 @@ class MyItemsForm(wx.Dialog):
             self.connection = kwargs.pop("connection")
         except:
             self.Destroy()
-            
+
         super().__init__(parent, title="TradePlaza-My Items")
         self.SetIcon(parent.icon)
         self._new_user = None
@@ -29,7 +29,6 @@ class MyItemsForm(wx.Dialog):
         tmp = wx.StaticText(self, label="_"*80)
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
-
         
         self.AddItems()
         self.SetSizerAndFit(formSizer)
