@@ -177,9 +177,11 @@ user_rank AS(
     Group By
         i.email
 ),
-at_lon AS(
+lat_lon AS(
     SELECT
         items_to_find_dist.*,
+        response_time.Response_Time,
+        user_rank.user_rank,
         query_on_user.postal_code AS user_postal_code,
         RADIANS(a.latitude) AS lat1,
         RADIANS(a2.latitude) AS lat2,
@@ -211,8 +213,8 @@ SELECT
     la.title,
     la.game_condition,
     la.description,
-    h.item_postal_code,
-    h.user_postal_code,
+    la.Response_Time,
+    la.user_rank,
     3958.75 * 2 * (ATAN2(SQRT(haversine_a), SQRT(1 - haversine_a))) AS distance
 FROM
     lat_lon la

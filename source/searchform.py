@@ -1,5 +1,6 @@
 import wx,mysql
 from query_search import keyword_search,my_postal_search,within_miles_search,in_postal_search
+from searchresults import SearchResults
 
 class SearchForm(wx.Dialog):
     def __init__(self, parent,**kwargs):
@@ -72,11 +73,11 @@ class SearchForm(wx.Dialog):
                     query = keyword_search(self.user_email, self.byKeywordTxt.GetValue().strip())
 
                     cursor.execute(query)
-                    self.connection.commit()
-                    success = True
+                    res = cursor.fetchall()
+                    search_type="keyword " + self.byKeywordTxt.GetValue().strip()
                 except mysql.connector.Error as e:
                     wx.MessageBox("Error Searching for items: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
-                    success = False
+                    return False
 
         # postal code
 
@@ -86,11 +87,11 @@ class SearchForm(wx.Dialog):
                 query = my_postal_search(self.user_email)
 
                 cursor.execute(query)
-                self.connection.commit()
-                success = True
+                res = cursor.fetchall()
+                search_type="In my postal code "
             except mysql.connector.Error as e:
                 wx.MessageBox("Error Searching for items: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
-                success = False
+                return False
 
         #within miles
         if self.withinMilesRb.GetValue():
@@ -99,11 +100,11 @@ class SearchForm(wx.Dialog):
                 query = within_miles_search(self.user_email,self.radSpin.GetValue())
 
                 cursor.execute(query)
-                self.connection.commit()
-                success = True
+                res = cursor.fetchall()
+                search_type="within" + str(self.radSpin.GetValue()) + " miles "
             except mysql.connector.Error as e:
                 wx.MessageBox("Error Searching for items: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
-                success = False
+                return False
 
         
         #In Postal code
@@ -114,12 +115,17 @@ class SearchForm(wx.Dialog):
                     self.EndModal(wx.ID_EXIT)
             try:
                 cursor = self.connection.cursor()
-                query = in_postal_search(self.user_email,self.radSpin.GetValue())
+                query = in_postal_search(self.user_email,self.inPostalTxt.GetValue().strip())
 
                 cursor.execute(query)
-                self.connection.commit()
-                success = True
+                res = cursor.fetchall()
+                search_type="In postal code " + self.inPostalTxt.GetValue()
             except mysql.connector.Error as e:
                 wx.MessageBox("Error Searching for items: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
-                success = False
+                return False
 
+        self.Hide()
+        sr=SearchResults(self.Parent, res=res,search_type=search_type)
+        r=sr.ShowModal()
+        if r == wx.ID_OK:
+            self.EndModal(wx.ID_OK)
