@@ -51,28 +51,30 @@ class MyItemsForm(wx.Dialog):
 
         try:
             cursor = self.connection.cursor()
-            query = "SELECT COUNT(item_number) AS GameCount FROM BoardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query_dict = {'user_email':self.user_id}
+
+            query = "SELECT COUNT(item_number) AS GameCount FROM BoardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_board = res[0][0]
             countGrid.SetCellValue(0, 0, str(num_board))
-            query = "SELECT COUNT(item_number) AS GameCount FROM PlayingCardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM PlayingCardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_card = res[0][0]
             countGrid.SetCellValue(0, 1, str(num_card))
-            query = "SELECT COUNT(item_number) AS GameCount FROM ComputerGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM ComputerGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_computer = res[0][0]
             countGrid.SetCellValue(0, 2, str(num_computer))
-            query = "SELECT COUNT(item_number) AS GameCount FROM CollectibleCardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM CollectibleCardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_collectible = res[0][0]
             countGrid.SetCellValue(0, 3, str(num_collectible))
-            query = "SELECT COUNT(item_number) AS GameCount FROM VideoGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM VideoGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_video = res[0][0]
             countGrid.SetCellValue(0, 4, str(num_video))

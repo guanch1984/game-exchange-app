@@ -79,30 +79,17 @@ class TradeHistoryForm(wx.Dialog):
 
         if result:
             for i in range(n):
+                print(result[i])
                 for j in range(5):
+                    countGrid.SetCellValue(i,j, str(result[i][j]))
                     if j==4 and float(result[i][j])>=0.5:
-                        countGrid.SetBackgroundColour(i,j,wx.Colour(red))
-                    else:
-                        countGrid.SetCellValue(i,j, str(result[i][j]))
+                        countGrid.SetBackgroundColour(i,j,"red")
         else:
             print('no result found!')      
 
         countGrid.SetDefaultRowSize(30)
         countGrid.SetDefaultColSize(100)
         self.formSizer.Add(countGrid, 0, wx.ALL, 4)
-
-        # Example code to show how to populate grid with data
-        countGrid.SetCellValue(0, 0, "Proposer")
-        countGrid.SetCellValue(0, 1, "2")
-        countGrid.SetCellValue(0, 2, "1")
-        countGrid.SetCellValue(0, 3, "1")
-        countGrid.SetCellValue(0, 4, "50.0%")
-        countGrid.SetCellBackgroundColour(0, 4, "red")
-        countGrid.SetCellValue(1, 0, "Counterparty")
-        countGrid.SetCellValue(1, 1, "2")
-        countGrid.SetCellValue(1, 2, "2")
-        countGrid.SetCellValue(1, 3, "0")
-        countGrid.SetCellValue(1, 4, "0.0%")
 
     def AddDetail(self):
         # query the database to get trade list
