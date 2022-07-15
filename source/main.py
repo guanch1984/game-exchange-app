@@ -128,19 +128,19 @@ class MainWindow(wx.Frame):
         self.myRank.SetLabel(msg)
 
     def DoListItem(self, event):
-        dl = NewListingForm(self)
+        dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self)
+        mi = MyItemsForm(self, connection=self.connection, user_id=self.logged_user)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
-        sf = SearchForm(self)
+        sf = SearchForm(self, connection=self.connection)
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
-        th = TradeHistoryForm(self)
+        th = TradeHistoryForm(self, connection=self.connection, user_id=self.logged_user)
         th.ShowModal()
 
     def DoLogin(self):
@@ -148,12 +148,14 @@ class MainWindow(wx.Frame):
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
+            self.logged_user = lf._logged_user
             self.PopulateUserData(lf._logged_user)
             self.Show(True)
         else:
             self.Close()
 
     def DoLogout(self, event):
+        self.logged_user == None
         self.Hide()
         self.ClearForm()
         self.DoLogin()

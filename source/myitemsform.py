@@ -1,8 +1,14 @@
 import wx
 import wx.grid
+from mysql.connector import Error
 
 class MyItemsForm(wx.Dialog):
-    def __init__(self, parent):
+    def __init__(self, parent, **kwargs):
+        try:
+            self.connection = kwargs.pop("connection")
+            self.user_id = kwargs.pop("user_id")
+        except:
+            self.Destroy()
         super().__init__(parent, title="TradePlaza-My Items")
         self.SetIcon(parent.icon)
         self._new_user = None
@@ -42,6 +48,39 @@ class MyItemsForm(wx.Dialog):
         countGrid.SetDefaultRowSize(30)
         countGrid.SetDefaultColSize(100)
         self.formSizer.Add(countGrid, 0, wx.ALL, 5)
+
+        try:
+            cursor = self.connection.cursor()
+            query = "SELECT COUNT(item_number) AS GameCount FROM BoardGame WHERE email = \"" + self.Parent.logged_user + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            num_board = res[0][0]
+            countGrid.SetCellValue(0, 0, str(num_board))
+            query = "SELECT COUNT(item_number) AS GameCount FROM PlayingCardGame WHERE email = \"" + self.Parent.logged_user + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            num_card = res[0][0]
+            countGrid.SetCellValue(0, 1, str(num_card))
+            query = "SELECT COUNT(item_number) AS GameCount FROM ComputerGame WHERE email = \"" + self.Parent.logged_user + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            num_computer = res[0][0]
+            countGrid.SetCellValue(0, 2, str(num_computer))
+            query = "SELECT COUNT(item_number) AS GameCount FROM CollectibleCardGame WHERE email = \"" + self.Parent.logged_user + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            num_collectible = res[0][0]
+            countGrid.SetCellValue(0, 3, str(num_collectible))
+            query = "SELECT COUNT(item_number) AS GameCount FROM VideoGame WHERE email = \"" + self.Parent.logged_user + "\""
+            cursor.execute(query)
+            res = cursor.fetchall()
+            num_video = res[0][0]
+            countGrid.SetCellValue(0, 4, str(num_video))
+            countGrid.SetCellValue(0, 5, str(num_board + num_card + num_computer + num_collectible + num_video))
+
+        except Error as e:
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
+            return False
 
     def AddItems(self):
         # query the database to get item list
