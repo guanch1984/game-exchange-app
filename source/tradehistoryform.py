@@ -5,6 +5,7 @@ class TradeHistoryForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
+            self.user_id = kwargs.pop("user_id")
         except:
             self.Destroy()
 
@@ -68,6 +69,7 @@ class TradeHistoryForm(wx.Dialog):
         n = len(result)
         countGrid = wx.grid.Grid(self, wx.ID_ANY)
         countGrid.CreateGrid(n, 5)
+
         countGrid.HideRowLabels()
         countGrid.SetColLabelValue(0, "My role")
         countGrid.SetColLabelValue(1, "Total")
@@ -88,6 +90,19 @@ class TradeHistoryForm(wx.Dialog):
         countGrid.SetDefaultRowSize(30)
         countGrid.SetDefaultColSize(100)
         self.formSizer.Add(countGrid, 0, wx.ALL, 4)
+
+        # Example code to show how to populate grid with data
+        countGrid.SetCellValue(0, 0, "Proposer")
+        countGrid.SetCellValue(0, 1, "2")
+        countGrid.SetCellValue(0, 2, "1")
+        countGrid.SetCellValue(0, 3, "1")
+        countGrid.SetCellValue(0, 4, "50.0%")
+        countGrid.SetCellBackgroundColour(0, 4, "red")
+        countGrid.SetCellValue(1, 0, "Counterparty")
+        countGrid.SetCellValue(1, 1, "2")
+        countGrid.SetCellValue(1, 2, "2")
+        countGrid.SetCellValue(1, 3, "0")
+        countGrid.SetCellValue(1, 4, "0.0%")
 
     def AddDetail(self):
         # query the database to get trade list
@@ -136,6 +151,7 @@ class TradeHistoryForm(wx.Dialog):
 
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
         itemsGrid.CreateGrid(n, 9)
+
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Proposed\nDate")
         itemsGrid.SetColLabelValue(1, "Accepted/\nRejected Date")
@@ -146,13 +162,15 @@ class TradeHistoryForm(wx.Dialog):
         itemsGrid.SetColLabelValue(6, "Desired item")
         itemsGrid.SetColLabelValue(7, "Other User")
         itemsGrid.SetColLabelValue(8, "")
-
+        
+        underlineFont = wx.Font(8, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True)
         if result:
             for i in range(n):
                 for j in range(9):
                     if j ==8 :
                         itemsGrid.SetCellValue(i,j, "Detail")
                         itemsGrid.SetCellTextColour(i,j, "blue")
+                        itemsGrid.SetCellFont(i,j, underlineFont)
                     else:
                         itemsGrid.SetCellValue(i,j, str(result[i][j]))
         else:
@@ -162,6 +180,10 @@ class TradeHistoryForm(wx.Dialog):
         itemsGrid.SetDefaultColSize(150)
         itemsGrid.SetColSize(8, 5)
         self.formSizer.Add(itemsGrid, 0, wx.ALL, 8)
+
+    def OnCellClick(self, event):
+        print("row: " + str(event.GetRow()) + " clicked")
+        print("col: " + str(event.GetCol()) + " clicked")
 
     
    
