@@ -1,6 +1,6 @@
 import wx
 import os
-import mysql.connector
+from mysql.connector import connect, Error
 from getpass import getpass
 from loginform import LoginForm
 from searchform import SearchForm
@@ -31,9 +31,9 @@ class MainWindow(wx.Frame):
 
     def ConnectToDb(self):
         try:
-            self.connection =  mysql.connector.connect(host="localhost",
+            self.connection =  connect(host="localhost",
                 user="admin", password="admin",database="cs6400_summer2022_team065")
-        except mysql.connector.Error as e:
+        except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
 
@@ -163,7 +163,7 @@ class MainWindow(wx.Frame):
 
 def SetupDB():
     try:
-        with mysql.connector.connect(
+        with connect(
             host="localhost",
             user=input("Enter username: "),
             password=getpass("Enter password: "),
@@ -180,12 +180,12 @@ def SetupDB():
             for db in cursor:
                 print(db)
 
-    except mysql.connector.Error as e:
+    except Error as e:
         print(e)
 
 def PopulateDB():
     try:
-        with mysql.connector.connect(
+        with connect(
             host="localhost",
             user=input("Enter username: "),
             password=getpass("Enter password: "),
