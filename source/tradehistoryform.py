@@ -6,6 +6,14 @@ class TradeHistoryForm(wx.Dialog):
         try:
             self.connection = kwargs.pop("connection")
             self.user_id = kwargs.pop("user_id")
+
+            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            query_dict = {'user_id':self.user_id}
+            cursor = self.connection.cursor()
+            iterator = cursor.execute(user_email_query, query_dict)
+            result = cursor.fetchall()
+
+            self.user_email = result[0][0]
         except:
             self.Destroy()
 
@@ -61,7 +69,7 @@ class TradeHistoryForm(wx.Dialog):
             ) AS TD
         GROUP BY my_role
         '''
-        query_dict = {'user_email':self.user_id}
+        query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_summary_query, query_dict)
         result = cursor.fetchall()
@@ -130,7 +138,7 @@ class TradeHistoryForm(wx.Dialog):
         WHERE PI.email= %(user_email)s or CI.email= %(user_email)s
         ORDER BY proposed_date DESC, response_time DESC;
         '''
-        query_dict = {'user_email':self.user_id}
+        query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_detail_query, query_dict)
         result = cursor.fetchall()

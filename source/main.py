@@ -224,13 +224,6 @@ class MainWindow(wx.Frame):
         else:
             self.Close()
 
-        #user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
-        #query_tuple = (lf._logged_user, lf._logged_user)
-        #self.cursor.execute(user_email_query, query_tuple)
-        #result = self.cursor.fetchall()
-        #self.user_email = result[0][0]
-        # print(self.user_email)
-
     def DoLogout(self, event):
         self.logged_user == None
         self.Hide()
