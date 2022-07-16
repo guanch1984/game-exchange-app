@@ -133,7 +133,7 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self, connection=self.connection, user_email = self.user_email)
+        mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
@@ -141,7 +141,7 @@ class MainWindow(wx.Frame):
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
-        th = TradeHistoryForm(self, connection=self.connection, user_email = self.user_email)
+        th = TradeHistoryForm(self, connection=self.connection, user_id = self.logged_user)
         th.ShowModal()
 
     def DoLogin(self):
@@ -152,15 +152,14 @@ class MainWindow(wx.Frame):
         if res == wx.ID_OK:
             self.logged_user = lf._logged_user
             self.PopulateUserData(lf._logged_user)
-            print(lf._logged_user)
             self.Show(True)
         else:
             self.Close()
-        user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
-        query_tuple = (lf._logged_user, lf._logged_user)
-        self.cursor.execute(user_email_query, query_tuple)
-        result = self.cursor.fetchall()
-        self.user_email = result[0][0]
+        #user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
+        #query_tuple = (lf._logged_user, lf._logged_user)
+        #self.cursor.execute(user_email_query, query_tuple)
+        #result = self.cursor.fetchall()
+        #self.user_email = result[0][0]
         # print(self.user_email)
 
     def DoLogout(self, event):
