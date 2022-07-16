@@ -83,7 +83,7 @@ class AcceptRejectForm(wx.Dialog):
         self.itemsGrid.SetColSize(5, 150)
 
         for row, (proposed_date, my_title, my_item_number, my_nickname, my_email, offered_nickname, offered_email, offered_title, offered_item_number, distance) in enumerate(cursor.fetchall()):
-            item = (proposed_date, my_title, offered_nickname, "RANK", distance, offered_title, "ACCEPT", "REJECT", my_item_number, offered_item_number, my_email, offered_email)
+            item = (proposed_date, my_title, offered_nickname, self.determineRank(offered_email), distance, offered_title, "ACCEPT", "REJECT", my_item_number, offered_item_number, my_email, offered_email)
             self.itemsGrid.AppendRows(numRows=1)
             for col, attribute in enumerate(item):
                 self.itemsGrid.SetCellValue(row, col, str(attribute))
@@ -145,3 +145,44 @@ class AcceptRejectForm(wx.Dialog):
         if self.itemsGrid.GetNumberRows() == 0:
             res = wx.MessageBox("No pending trades to accept/reject. Returning to main menu.")
             self.EndModal(wx.ID_EXIT)
+
+    def determineRank(self, other_email):
+        query = """
+        SELECT *
+        FROM Trade INNER JOIN (SELECT item_number, email, title FROM BoardGame UNION
+                SELECT item_number, email, title FROM CollectibleCardGame UNION
+                SELECT item_number, email, title FROM ComputerGame UNION
+                SELECT item_number, email, title FROM PlayingCardGame UNION
+                SELECT item_number, email, title FROM VideoGame
+            ) AS propose_item ON propose_item.item_number = proposer_item_number INNER JOIN
+            (SELECT item_number, email, title FROM BoardGame UNION
+                SELECT item_number, email, title FROM CollectibleCardGame UNION
+                SELECT item_number, email, title FROM ComputerGame UNION
+                SELECT item_number, email, title FROM PlayingCardGame UNION
+                SELECT item_number, email, title FROM VideoGame
+            ) AS counter_item ON counter_item.item_number = counter_party_item_number
+        WHERE (counter_item.email = "{0}" OR propose_item.email = "{0}") AND (trade_status != "PENDING" AND trade_status IS NOT NULL)
+        """.format(other_email)
+
+        cursor = self.connection.cursor()
+        cursor.execute(query)
+
+        data = cursor.fetchall()
+        trade_completed = 0
+        if (data is not None and len(data) > 0):
+            trade_completed = data[0][0]
+        
+        if trade_completed == 0:
+            return 'None'
+        elif trade_completed <= 2:
+            return 'Aluminum'
+        elif trade_completed <= 3:
+            return 'Bronze'
+        elif trade_completed <= 5:
+            return 'Silver'
+        elif trade_completed <= 7:
+            return 'Gold'
+        elif trade_completed <= 9:
+            return 'Platinum'
+        else:
+            return 'Alexandinium'
