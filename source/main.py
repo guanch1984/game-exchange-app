@@ -10,6 +10,7 @@ from tradehistoryform import TradeHistoryForm
 
 # TODO: REMOVE TEMP TEST
 from proposetradeform import ProposeTradeForm
+from acceptrejectform import AcceptRejectForm
 
 #user: admin password: admin
 __SETDB = False
@@ -17,7 +18,19 @@ __SETDB = False
 class MainWindow(wx.Frame):
     # TODO: REMOVE TEMP TEST
     def DoPropose(self):
-        lf = ProposeTradeForm(self, connection=self.connection, tradeitem="Fake Item Name", user_id="nickname_0", user_email="user0@gatech.edu", tradeitemnumber="1")
+        lf = ProposeTradeForm(self, connection=self.connection, tradeitem="Fake Item Name", user_id="nickname_0", user_email="user340@gatech.edu", tradeitemnumber="1")
+        
+        res = lf.ShowModal()
+        # check if login is succesfull
+        if res == wx.ID_OK:
+            self.logged_user = lf._logged_user
+            self.PopulateUserData(lf._logged_user)
+            self.Show(True)
+        else:
+            self.Close()
+
+    def DoAcceptReject(self):
+        lf = AcceptRejectForm(self, connection=self.connection, user_id="nickname_0", user_email="user129@gatech.edu")
         
         res = lf.ShowModal()
         # check if login is succesfull
@@ -38,7 +51,8 @@ class MainWindow(wx.Frame):
         self.RenderMainMenu()
         self.ConnectToDb()
         # TODO: RESTORE LATER
-        self.DoPropose()
+        # self.DoPropose()
+        self.DoAcceptReject()
         # self.DoLogin()
 
     def OnClose(self, event):

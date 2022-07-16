@@ -1,6 +1,4 @@
 import wx
-from mysql.connector import Error
-
 
 class ProposeTradeForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
@@ -14,7 +12,6 @@ class ProposeTradeForm(wx.Dialog):
             self.Destroy()
         super().__init__(parent, title="TradePlaza")
         self.SetIcon(parent.icon)
-        self._logged_user = None
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
