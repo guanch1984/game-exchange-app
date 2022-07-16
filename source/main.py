@@ -17,7 +17,7 @@ class MainWindow(wx.Frame):
         self.connection = None
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.icon = wx.Icon()
-        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'/trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
+        self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.ConnectToDb()
@@ -249,7 +249,7 @@ def SetupDB(db_config):
         #     password=getpass("Enter password: "),
         # ) as connection:
         cursor = conn.cursor()
-        schema_file = open(os.getcwd() + r'/team065_p2_schema.sql', "r")
+        schema_file = open(os.getcwd() + r'\Phase_2\team065_p2_schema.sql', "r")
         querries = schema_file.read().split(";")
         for querry in querries:
             if querry.strip() == "":
@@ -264,7 +264,7 @@ def PopulateDB(db_config, db_name):
     try:
         conn = MySQLConnection(**db_config)
         cursor = conn.cursor()
-        schema_file = open(os.getcwd() + r'/sample_data.sql', "r")
+        schema_file = open(os.getcwd() + r'\source\sample_data.sql', "r")
         querries = schema_file.read().split(";")
         
         for querry in querries:
