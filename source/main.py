@@ -114,19 +114,86 @@ class MainWindow(wx.Frame):
         self.SetSizer(formSizer)
 
     def PopulateUserData(self, user_id):
+        self.SetUnacceptedTrades("")
+        self.SetMyRank("")
+        self.SetResponseTime("")
         pass
 
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
 
     def SetUnacceptedTrades(self, msg):
-        self.unacceptedTrades.SetLabel(msg)
+        try:
+            cursor = self.connection.cursor()
+            query = "Select count(*) from Trade Inner Join (Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin Where '" + self.logged_user +  "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Proposed' GROUP BY TradeJoin.email;"
+
+            cursor.execute(query)
+            res = cursor.fetchall()
+            if len(res) == 0:
+                self.unacceptedTrades.SetLabel('0')
+            elif res[-1][-1] <=1:
+                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
+            else:
+                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
+                self.unacceptedTrades.SetForegroundColour('Red')
+        except Error as e:
+            self.unacceptedTrades.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def SetResponseTime(self, msg):
-        self.responseTime.SetLabel(msg)
+        try:
+            cursor = self.connection.cursor()
+            query = "Select ROUND(avg(TIMESTAMPDIFF(DAY,accept_reject_date,proposed_date)),1) from Trade Inner Join(Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin where '" + self.logged_user + "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Accepted' or Trade.trade_status='Rejected' GROUP BY TradeJoin.email;"
+            cursor.execute(query)
+            res = cursor.fetchall()
+           
+            if len(res) == 0:
+                self.responseTime.SetLabel('None')
+                self.responseTime.SetForegroundColour("Black")
+            elif res[-1][-1] <= 7.0:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Green")
+            elif res[-1][-1] <= 14.0:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Yellow")
+            elif res[-1][-1] <= 20.9:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Orange")
+            elif res[-1][-1] <= 27.9:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Red")
+            else:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Red")
+        except Error as e:
+            self.responseTime.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def SetMyRank(self, msg):
-        self.myRank.SetLabel(msg)
+        try:
+            cursor = self.connection.cursor()
+            query = "Select count(*) from Trade Inner Join(Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin where '" + self.logged_user  + "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number OR Trade.proposer_item_number= TradeJoin.item_number where Trade.trade_status='Accepted' GROUP BY TradeJoin.email;"
+            
+            cursor.execute(query)
+            res = cursor.fetchall()
+            
+            if len(res) == 0:
+                self.myRank.SetLabel('None')
+            elif res[-1][-1] <=2:
+                self.myRank.SetLabel('Aluminium')
+            elif res[-1][-1] <=3:
+                self.myRank.SetLabel('Bronze')
+            elif res[-1][-1] <=5:
+                self.myRank.SetLabel('Silver')
+            elif res[-1][-1] <=7:
+                self.myRank.SetLabel('Gold')
+            elif res[-1][-1] <=9:
+                self.myRank.SetLabel('Platinum')
+            else:
+                self.myRank.SetLabel('Alexandinium')
+        except Error as e:
+            self.myRank.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def DoListItem(self, event):
         dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
@@ -228,5 +295,3 @@ if __name__ == '__main__':
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
-
-
