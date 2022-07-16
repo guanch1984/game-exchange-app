@@ -8,10 +8,26 @@ from newlistingform import NewListingForm
 from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
 
+# TODO: REMOVE TEMP TEST
+from proposetradeform import ProposeTradeForm
+
 #user: admin password: admin
 __SETDB = False
 
 class MainWindow(wx.Frame):
+    # TODO: REMOVE TEMP TEST
+    def DoPropose(self):
+        lf = ProposeTradeForm(self, connection=self.connection, tradeitem="Fake Item Name", user_id="nickname_0", user_email="user0@gatech.edu", tradeitemnumber="1")
+        
+        res = lf.ShowModal()
+        # check if login is succesfull
+        if res == wx.ID_OK:
+            self.logged_user = lf._logged_user
+            self.PopulateUserData(lf._logged_user)
+            self.Show(True)
+        else:
+            self.Close()
+
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
         self.connection = None
@@ -21,7 +37,9 @@ class MainWindow(wx.Frame):
         self.SetIcon(self.icon)
         self.RenderMainMenu()
         self.ConnectToDb()
-        self.DoLogin()
+        # TODO: RESTORE LATER
+        self.DoPropose()
+        # self.DoLogin()
 
     def OnClose(self, event):
         try:
@@ -31,7 +49,7 @@ class MainWindow(wx.Frame):
             pass
 
     def ConnectToDb(self):
-        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'nicholasshi', 'database':'cs6400_summer2022_team065'}
         try:
             self.connection = MySQLConnection(**db_config)
         except Error as e:
@@ -288,8 +306,9 @@ if __name__ == '__main__':
     # Test env
     if __SETDB:
     # if 1:
-        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin'}
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'nicholasshi'}
         db_name = 'cs6400_summer2022_team065'
+        print(db_config)
         SetupDB(db_config)
         PopulateDB(db_config, db_name)
     app = wx.App(False)
