@@ -1,13 +1,12 @@
 import wx
 import os
-from mysql.connector import MySQLConnection, Error
+from mysql.connector import MySQLConnection, connect, Error
 from getpass import getpass
 from loginform import LoginForm
 from searchform import SearchForm
 from newlistingform import NewListingForm
 from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
-from python_mysql_dbconfig import read_db_config
 
 #user: admin password: admin
 __SETDB = False
@@ -15,8 +14,8 @@ __SETDB = False
 class MainWindow(wx.Frame):
     def __init__(self):
         super().__init__(None, title="TradePlaza", size=(300,400))
+        self.connection = None
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        self._logged_user = None
         self.icon = wx.Icon()
         self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'/trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
@@ -32,9 +31,9 @@ class MainWindow(wx.Frame):
             pass
 
     def ConnectToDb(self):
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
         try:
-            db_config = read_db_config()
-            self.connection =  MySQLConnection(**db_config)
+            self.connection = MySQLConnection(**db_config)
         except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
@@ -114,7 +113,11 @@ class MainWindow(wx.Frame):
         formSizer.Add(hSizer, 0, wx.EXPAND)
         self.SetSizer(formSizer)
 
-
+    def PopulateUserData(self, user_id):
+        self.SetUnacceptedTrades("")
+        self.SetMyRank("")
+        self.SetResponseTime("")
+        pass
 
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
@@ -122,55 +125,112 @@ class MainWindow(wx.Frame):
     def SetUnacceptedTrades(self, msg):
         try:
             cursor = self.connection.cursor()
-            query = "Select count(*) from Trade Inner Join (Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin Where '" + self._logged_user +  "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Proposed' GROUP BY TradeJoin.email;"
+            query = "Select count(*) from Trade Inner Join (Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin Where '" + self.logged_user +  "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Proposed' GROUP BY TradeJoin.email;"
+
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 0:
                 self.unacceptedTrades.SetLabel('0')
+            elif res[-1][-1] <=1:
+                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
             else:
-                self.unacceptedTrades.SetLabel(str(len(res)))
+                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
+                self.unacceptedTrades.SetForegroundColour('Red')
         except Error as e:
             self.unacceptedTrades.SetLabel("Error")
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
-    
-    def PopulateUserData(self, user_id):
-        self._logged_user = user_id
-        self.SetUnacceptedTrades("")
-        pass
-            
+
     def SetResponseTime(self, msg):
-        self.responseTime.SetLabel(msg)
+        try:
+            cursor = self.connection.cursor()
+            query = "Select ROUND(avg(TIMESTAMPDIFF(DAY,accept_reject_date,proposed_date)),1) from Trade Inner Join(Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin where '" + self.logged_user + "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='Accepted' or Trade.trade_status='Rejected' GROUP BY TradeJoin.email;"
+            cursor.execute(query)
+            res = cursor.fetchall()
+           
+            if len(res) == 0:
+                self.responseTime.SetLabel('None')
+                self.responseTime.SetForegroundColour("Black")
+            elif res[-1][-1] <= 7.0:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Green")
+            elif res[-1][-1] <= 14.0:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Yellow")
+            elif res[-1][-1] <= 20.9:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Orange")
+            elif res[-1][-1] <= 27.9:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Red")
+            else:
+                self.responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime.SetForegroundColour("Red")
+        except Error as e:
+            self.responseTime.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def SetMyRank(self, msg):
-        self.myRank.SetLabel(msg)
+        try:
+            cursor = self.connection.cursor()
+            query = "Select count(*) from Trade Inner Join(Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin where '" + self.logged_user  + "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number OR Trade.proposer_item_number= TradeJoin.item_number where Trade.trade_status='Accepted' GROUP BY TradeJoin.email;"
+            
+            cursor.execute(query)
+            res = cursor.fetchall()
+            
+            if len(res) == 0:
+                self.myRank.SetLabel('None')
+            elif res[-1][-1] <=2:
+                self.myRank.SetLabel('Aluminium')
+            elif res[-1][-1] <=3:
+                self.myRank.SetLabel('Bronze')
+            elif res[-1][-1] <=5:
+                self.myRank.SetLabel('Silver')
+            elif res[-1][-1] <=7:
+                self.myRank.SetLabel('Gold')
+            elif res[-1][-1] <=9:
+                self.myRank.SetLabel('Platinum')
+            else:
+                self.myRank.SetLabel('Alexandinium')
+        except Error as e:
+            self.myRank.SetLabel("Error")
+            wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def DoListItem(self, event):
-        dl = NewListingForm(self)
+        dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self)
+        mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
-        sf = SearchForm(self)
+        sf = SearchForm(self, connection=self.connection)
         sf.ShowModal()
 
     def DoTradeHistory(self,event):
-        th = TradeHistoryForm(self)
+        th = TradeHistoryForm(self, connection=self.connection, user_id = self.logged_user)
         th.ShowModal()
 
     def DoLogin(self):
         lf = LoginForm(self, connection=self.connection)
+        
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
+            self.logged_user = lf._logged_user
             self.PopulateUserData(lf._logged_user)
             self.Show(True)
         else:
             self.Close()
+        #user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
+        #query_tuple = (lf._logged_user, lf._logged_user)
+        #self.cursor.execute(user_email_query, query_tuple)
+        #result = self.cursor.fetchall()
+        #self.user_email = result[0][0]
+        # print(self.user_email)
 
     def DoLogout(self, event):
+        self.logged_user == None
         self.Hide()
         self.ClearForm()
         self.DoLogin()
@@ -178,53 +238,60 @@ class MainWindow(wx.Frame):
     def ClearForm(self):
         pass
 
-def SetupDB():
+def SetupDB(db_config):
+    conn = None
     try:
-            db_config = read_db_config()
-            connection =  MySQLConnection(**db_config)
-            cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'/team065_p2_schema.sql', "r")
-            querries = schema_file.read().split(";")
-            for querry in querries:
-                if querry.strip() == "":
-                    continue
-                #print(querry)
-                cursor.execute(querry.replace(r'"', "'"))
-            cursor.execute("SHOW DATABASES")
-            for db in cursor:
-                print(db)
-
+        print('Connecting to MySQL database...')
+        conn = MySQLConnection(**db_config)
+        # with MySQLConnection(
+        #     host="localhost",
+        #     user=input("Enter username: "),
+        #     password=getpass("Enter password: "),
+        # ) as connection:
+        cursor = conn.cursor()
+        schema_file = open(os.getcwd() + r'/team065_p2_schema.sql', "r")
+        querries = schema_file.read().split(";")
+        for querry in querries:
+            if querry.strip() == "":
+                continue
+            cursor.execute(querry.replace(r'"', "'"))
     except Error as e:
         print(e)
 
-def PopulateDB():
+def PopulateDB(db_config, db_name):
+    db_config['database'] = db_name
+    conn = None
     try:
-            db_config = read_db_config()
-            connection =  MySQLConnection(**db_config)
-            cursor = connection.cursor()
-            schema_file = open(os.getcwd() + r'/sample_data.sql', "r")
-            querries = schema_file.read().split(";")
-            for querry in querries:
-                if querry.strip() == "":
-                    continue
-                if "'" in querry:
-                    continue
-                querry = querry.replace(r'"', "'")
-                cursor.execute(querry)
-            connection.commit()
-            cursor.execute("SELECT * FROM Address LIMIT 10")
-            result = cursor.fetchall()
-            for row in result:
-                print(row) 
+        conn = MySQLConnection(**db_config)
+        cursor = conn.cursor()
+        schema_file = open(os.getcwd() + r'/sample_data.sql', "r")
+        querries = schema_file.read().split(";")
+        
+        for querry in querries:
+            if querry.strip() == "":
+                continue
+            if "'" in querry:
+                continue
+            querry = querry.replace(r'"', "'")
+            cursor.execute(querry)
+        conn.commit()
+        print('Successfully populated database!')
+        cursor.execute("SELECT * FROM Address LIMIT 10")
+        result = cursor.fetchall()
+        for row in result:
+            print(row) 
 
     except Error as e:
         print(e)
 
 if __name__ == '__main__':
     # Test env
-
-    # SetupDB()
-    # PopulateDB()
+    if __SETDB:
+    # if 1:
+        db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin'}
+        db_name = 'cs6400_summer2022_team065'
+        SetupDB(db_config)
+        PopulateDB(db_config, db_name)
     app = wx.App(False)
     frame = MainWindow()
     app.MainLoop()
