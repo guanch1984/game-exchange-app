@@ -263,17 +263,17 @@ class ItemDetailsForm(wx.Dialog):
 
             if self.user_id != self.itemresult[4]:
                 self.is_another_user = True
-                cursor.execute("select nickname, postal_code from TradePlazaUser where email={0}".format(self.itemresult[4]))
+                cursor.execute(" select nickname, postal_code from TradePlazaUser where email='{0}' ".format(self.itemresult[4]))
                 res = cursor.fetchone()
                 self.another_u_nickname = res[0]
                 self.another_u_pc = res[1]
 
-                cursor.execute("select city, state from Address where postal_code={0}".format(self.another_u_pc))
+                cursor.execute(" select city, state from Address where postal_code='{0}' ".format(self.another_u_pc))
                 res = cursor.fetchone()
                 self.another_u_city = res[0]
                 self.another_u_state = res[1]
 
-                cursor.execute("select postal_code from TradePlazaUser where email={0}".format(self.user_id))
+                cursor.execute(" select postal_code from TradePlazaUser where email='{0}' ".format(self.user_id))
                 res = cursor.fetchone()
                 if res[0] != self.another_u_pc:
                     self.is_diff_pc = True
