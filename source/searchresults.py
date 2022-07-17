@@ -60,6 +60,22 @@ class SearchResults(wx.Dialog):
             for i in range(9):
                 self.itemsGrid.SetReadOnly(c, i, True)
 
+            # Add coloring for response time
+            if v[5] is None:
+                pass
+            elif v[5] <= 7:
+                self.itemsGrid.SetCellTextColour(c, 5, 'green')
+            elif v[5] <= 14:
+                self.itemsGrid.SetCellTextColour(c, 5, 'yellow')
+            elif v[5] <= 20.9:
+                self.itemsGrid.SetCellTextColour(c, 5, 'orange')
+            elif v[5] <= 27.9:
+                self.itemsGrid.SetCellTextColour(c, 5, 'red')
+            else:
+                attr = wx.grid.GridCellAttr()
+                attr.SetTextColour('red')
+                attr.SetFont(wx.Font(self._sysFont.GetPointSize(), wx.DEFAULT, wx.NORMAL, wx.BOLD))
+                self.itemsGrid.SetAttr(c, 8, attr)
 
         self.itemsGrid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.onGridSelect)
 
