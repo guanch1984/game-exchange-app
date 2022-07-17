@@ -153,22 +153,17 @@ class MainWindow(wx.Frame):
     def SetUnacceptedTrades(self, user_id):
         try:
             cursor = self.connection.cursor()
-            query = """Select count(*) from Trade Inner Join 
-                (Select Item.item_number, ItemJoin.email from Item 
-                NATURAL JOIN 
-                (Select BoardGame.item_number, BoardGame.email from BoardGame 
-                 UNION 
-                 Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame 
-                 UNION 
-                 Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame 
-                 UNION 
-                 Select ComputerGame.item_number, ComputerGame.email from ComputerGame 
-                 UNION 
-                 Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin 
-                 Where "{email}" = ItemJoin.email) AS TradeJoin 
-                 ON Trade.counter_party_item_number= TradeJoin.item_number 
-                 where Trade.trade_status='PENDING' 
-                 GROUP BY TradeJoin.email;""".format(email=user_id)
+            query = """
+                SELECT COUNT(*)
+                FROM (SELECT item_number, email FROM BoardGame WHERE email = "{email}" UNION
+                        SELECT item_number, email FROM CollectibleCardGame WHERE email = "{email}" UNION
+                        SELECT item_number, email FROM ComputerGame WHERE email = "{email}" UNION
+                        SELECT item_number, email FROM PlayingCardGame WHERE email = "{email}" UNION
+                        SELECT item_number, email FROM VideoGame WHERE email = "{email}"
+                    ) as all_items INNER JOIN trade ON counter_party_item_number = item_number
+                WHERE trade_status = "PENDING"
+            """.format(email=user_id)
+
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 0:
