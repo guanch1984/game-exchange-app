@@ -128,7 +128,6 @@ class MainWindow(wx.Frame):
         try:
             cursor = self.connection.cursor()
             query = "Select count(*) from Trade Inner Join (Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin Where '" + self.logged_user +  "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number where Trade.trade_status='PENDING' GROUP BY TradeJoin.email;"
-
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 0:
@@ -175,7 +174,6 @@ class MainWindow(wx.Frame):
         try:
             cursor = self.connection.cursor()
             query = "Select count(*) from Trade Inner Join(Select Item.item_number, ItemJoin.email from Item NATURAL JOIN (Select BoardGame.item_number, BoardGame.email from BoardGame UNION Select PlayingCardGame.item_number, PlayingCardGame.email from PlayingCardGame UNION Select CollectibleCardGame.item_number, CollectibleCardGame.email from CollectibleCardGame UNION Select ComputerGame.item_number, ComputerGame.email from ComputerGame UNION Select VideoGame.item_number, VideoGame.email from VideoGame) AS ItemJoin where '" + self.logged_user  + "' = ItemJoin.email) AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number OR Trade.proposer_item_number= TradeJoin.item_number where Trade.trade_status='ACCEPT' GROUP BY TradeJoin.email;"
-            
             cursor.execute(query)
             res = cursor.fetchall()
             
