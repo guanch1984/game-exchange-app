@@ -6,7 +6,6 @@ class AcceptRejectForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
-            self.user_email = kwargs.pop("user_email")
             self.user_id = kwargs.pop("user_id")
         except:
             self.Destroy()
@@ -52,7 +51,7 @@ class AcceptRejectForm(wx.Dialog):
             tradeplazauser as my_user ON my_user.email = my_item.email INNER JOIN
             address as my_address ON my_user.postal_code = my_address.postal_code
         WHERE (my_user.email = "{}" OR my_user.nickname = "{}") AND (trade_status = "PENDING" or trade_status is null)
-        """.format(self.user_email, self.user_id)
+        """.format(self.user_id, self.user_id)
 
         cursor = self.connection.cursor()
         cursor.execute(query)
