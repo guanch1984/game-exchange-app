@@ -550,13 +550,13 @@ class ItemDetailsForm(wx.Dialog):
 
                 result_pc = wx.StaticText(panel, label=str(self.searchresult[7]))
 
-                if self.searchresult[8] >=0.0 and self.searchresult[7] <= 25.0:
+                if self.searchresult[7] >=0.0 and self.searchresult[7] <= 25.0:
                     result_pc.SetBackgroundColour("green")
-                elif self.searchresult[8] >=25.0 and self.searchresult[7] <= 50.0:
+                elif self.searchresult[7] >=25.0 and self.searchresult[7] <= 50.0:
                     result_pc.SetBackgroundColour("yellow")
-                elif self.searchresult[8] >=50.0 and self.searchresult[7] <= 100.0:
+                elif self.searchresult[7] >=50.0 and self.searchresult[7] <= 100.0:
                     result_pc.SetBackgroundColour("orange")
-                elif self.searchresult[8] >100.0:
+                elif self.searchresult[7] >100.0:
                     result_pc.SetBackgroundColour("red")
 
                 result_pc.SetFont(font_10n)
