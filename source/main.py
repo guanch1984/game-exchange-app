@@ -227,7 +227,13 @@ class MainWindow(wx.Frame):
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
-            self.logged_user = lf._logged_user
+            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            query_dict = {'user_id':lf._logged_user}
+            cursor = self.connection.cursor()
+            iterator = cursor.execute(user_email_query, query_dict)
+            result = cursor.fetchall()
+            self.logged_user = result[0][0]
+
             self.PopulateUserData(lf._logged_user)
             self.Show(True)
         else:

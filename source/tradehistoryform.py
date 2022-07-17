@@ -6,15 +6,15 @@ class TradeHistoryForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
-            self.user_id = kwargs.pop("user_id")
+            self.user_email = kwargs.pop("user_id")
 
-            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
-            query_dict = {'user_id':self.user_id}
-            cursor = self.connection.cursor()
-            iterator = cursor.execute(user_email_query, query_dict)
-            result = cursor.fetchall()
+            # user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            # query_dict = {'user_id':self.user_id}
+            # cursor = self.connection.cursor()
+            # iterator = cursor.execute(user_email_query, query_dict)
+            # result = cursor.fetchall()
 
-            self.user_email = result[0][0]
+            # self.user_email = result[0][0]
         except:
             self.Destroy()
 
