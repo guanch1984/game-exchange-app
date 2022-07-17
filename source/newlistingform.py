@@ -72,6 +72,8 @@ class NewListingForm(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.DoListItem, self.listBtn)
 
         if self.GetPendingTrades() > 2:
+            print("Pending trades")
+            print(self.GetPendingTrades())
             self.listBtn.Enable(False)
 
         formSizer.Add(self.listBtn, 0, wx.ALL, 5)
@@ -91,7 +93,7 @@ class NewListingForm(wx.Dialog):
                     UNION 
                     SELECT item_number FROM VideoGame WHERE email= %(user_email)s) AS UserItems
                     INNER JOIN (SELECT counter_party_item_number FROM Trade WHERE trade_status = "PENDING") AS 
-                    PendingTrades) AS PendingUserTrades""" 
+                    PendingTrades on item_number = counter_party_item_number) AS PendingUserTrades""" 
 
             cursor.execute(query, {'user_email':self.user_id})
             res = cursor.fetchall()
