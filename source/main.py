@@ -19,9 +19,10 @@ class MainWindow(wx.Frame):
         self.icon = wx.Icon()
         self.icon.CopyFromBitmap(wx.Bitmap(os.getcwd() + r'\source\trade_plaza_icon.png', wx.BITMAP_TYPE_ANY))
         self.SetIcon(self.icon)
-        self.RenderMainMenu()
+        
         self.ConnectToDb()
         self.DoLogin()
+        self.RenderMainMenu()
 
     def OnClose(self, event):
         try:
@@ -58,7 +59,7 @@ class MainWindow(wx.Frame):
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT, 5)
 
-        self.welcomeMsg = wx.StaticText(self, label="")
+        self.welcomeMsg = wx.StaticText(self, label="Welcome," + self.result[0][1] + ' ' + self.result[0][2] + '(' + self.result[0][3] + ')' )
         formSizer.Add(self.welcomeMsg, 0, wx.ALL, 5)
 
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -218,12 +219,12 @@ class MainWindow(wx.Frame):
         res = lf.ShowModal()
         # check if login is succesfull
         if res == wx.ID_OK:
-            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            user_email_query = 'select email, first_name, last_name, nickname from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
             query_dict = {'user_id':lf._logged_user}
             cursor = self.connection.cursor()
             iterator = cursor.execute(user_email_query, query_dict)
-            result = cursor.fetchall()
-            self.logged_user = result[0][0]
+            self.result = cursor.fetchall()
+            self.logged_user = self.result[0][0]
 
             self.PopulateUserData(lf._logged_user)
             self.Show(True)
