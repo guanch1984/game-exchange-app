@@ -35,7 +35,7 @@ class SearchForm(wx.Dialog):
         self.withinMilesRb = wx.RadioButton(self, wx.ID_ANY, label="Within")
         radSizer.Add(self.withinMilesRb, 0)
         # radSizer.Add(wx.StaticText(self, label="Within"), 0, wx.ALL, 5)
-        self.radSpin = wx.SpinCtrl(self, wx.ID_ANY, initial=1, min=1, max=300, style= wx.SP_ARROW_KEYS)
+        self.radSpin = wx.SpinCtrl(self, wx.ID_ANY, initial=1, min=1, max=100000, style= wx.SP_ARROW_KEYS)
         radSizer.Add(self.radSpin, 0)
         radSizer.Add(wx.StaticText(self, label="miles of me"), 0, wx.ALL, 5)
         formSizer.Add(radSizer, 0, wx.EXPAND|wx.ALL, 5)
