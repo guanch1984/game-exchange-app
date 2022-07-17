@@ -1,7 +1,6 @@
 
 import wx
 import wx.grid
-import numpy as np
 
 class ItemDetailForm(wx.Dialog):
     def __init__(self, parent, **kwargs):

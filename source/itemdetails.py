@@ -1,8 +1,6 @@
 
 from proposetradeform import ProposeTradeForm
-import wx,mysql
-import wx.grid
-
+import wx
 
 def form_query(item_number):
 
@@ -248,6 +246,7 @@ class ItemDetailsForm(wx.Dialog):
             self.connection = kwargs.pop("connection")
             self.user_id = kwargs.pop("user_id")
             self.searchresult = kwargs.pop("result")
+            self.is_diff_pc = False
         except:
             self.Destroy()
 
@@ -578,11 +577,12 @@ class ItemDetailsForm(wx.Dialog):
         
         main_sizer.Add(gs, 1, wx.EXPAND|wx.ALL, border = 15)
         panel.SetSizer(main_sizer)
+        print("reached")
 
-    def invoke_propose_trade(self):
+    def invoke_propose_trade(self, event):
         
         self.Hide()
-        sr=ProposeTradeForm(self.Parent, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
+        sr=ProposeTradeForm(self.Parent, connection=self.connection, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
         r=sr.ShowModal()
         if r == wx.ID_OK:
             self.EndModal(wx.ID_OK)
