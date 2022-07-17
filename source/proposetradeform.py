@@ -10,7 +10,7 @@ class ProposeTradeForm(wx.Dialog):
         except:
             self.Destroy()
         super().__init__(parent, title="TradePlaza")
-        self.SetIcon(parent.icon)
+        # self.SetIcon(parent.icon)
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -55,13 +55,15 @@ class ProposeTradeForm(wx.Dialog):
                     INNER JOIN address as offered_address ON offered_user.postal_code = offered_address.postal_code
                     CROSS JOIN (SELECT * FROM tradeplazauser WHERE email = "{email}" or nickname = "{nickname}") as my_user
                     INNER JOIN address as my_address ON my_user.postal_code = my_address.postal_code
-        """.format(item_number="1", email=self.user_id, nickname=self.user_id)
+        """.format(item_number=str(self.tradeitemnumber), email=self.user_id, nickname=self.user_id)
         cursor = self.connection.cursor()
         cursor.execute(query)
 
         data = cursor.fetchall()
+        distance = 0
         if (data is not None and len(data) > 0):
             distance = data[0][0]
+            print("Found distance: {}".format(distance))
 
         distanceLabel = wx.StaticText(self, label="{1}The other user is {0} miles away!{1}".format(str(distance), " " * 30))
         distanceLabel.SetBackgroundColour('blue')
@@ -105,7 +107,7 @@ class ProposeTradeForm(wx.Dialog):
         # Populate the grid with data
         cursor = self.connection.cursor()
         cursor.execute(query)
-        for row, item in enumerate(cursor.fetchall() * 2):
+        for row, item in enumerate(cursor.fetchall()):
             itemsGrid.AppendRows(numRows=1)
             for col, attribute in enumerate(item):
                 itemsGrid.SetCellValue(row, col, str(attribute))
@@ -125,11 +127,13 @@ class ProposeTradeForm(wx.Dialog):
         myitemnumber = self.grid_ref.GetCellValue(self.grid_ref.GetSelectedRows()[0], 0)
         
         query = """
-            UPDATE Trade SET counter_party_item_number = {}, proposed_date = NOW() WHERE proposer_item_number = {} AND counter_party_item_number IS NULL
+            INSERT INTO Trade (proposer_item_number, counter_party_item_number, trade_status, proposed_date, accept_reject_date) 
+            VALUES ({}, {}, "PENDING", NOW(), NULL)
         """.format(myitemnumber, self.tradeitemnumber)
 
         cursor = self.connection.cursor()
         cursor.execute(query)
+        self.connection.commit()
         
         # Confirmation message to bring user back to the main page
         res = wx.MessageBox("Trade proposed. Returning to main menu.", 'Ok', wx.OK )
