@@ -7,6 +7,7 @@ from searchform import SearchForm
 from newlistingform import NewListingForm
 from myitemsform import MyItemsForm
 from tradehistoryform import TradeHistoryForm
+from acceptrejectform import AcceptRejectForm
 
 #user: admin password: admin
 __SETDB = False
@@ -67,13 +68,16 @@ class MainWindow(wx.Frame):
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
         statsSizer = wx.BoxSizer(wx.VERTICAL)
         # add user stats
-        statBox0 = wx.StaticBox(self, wx.ID_ANY, "Unaccepted trades", style=wx.ALIGN_CENTER_HORIZONTAL)
-        statbox0Sizer = wx.StaticBoxSizer(statBox0, wx.VERTICAL)
-        text_unacceptedTrades = wx.StaticText(self, label=self.unacceptedTrades, size=(120,-1), style=wx.ALIGN_CENTER)
-        if int(self.unacceptedTrades) >=2 :
-            text_unacceptedTrades.SetForegroundColour('Red')
-        statbox0Sizer.Add(text_unacceptedTrades, 0, wx.EXPAND)
-        statsSizer.Add(statbox0Sizer, 0, wx.ALL, 20)
+        button_unacceptedTrades = wx.Button(self, label=self.unacceptedTrades, style=wx.BORDER_NONE, size=(100,50))
+        button_unacceptedTrades.SetBackgroundColour('white')
+        button_unacceptedTrades.SetForegroundColour('black')
+        if int(self.unacceptedTrades) == 1:
+            self.Bind(wx.EVT_BUTTON, self.DoAcceptRejectTrade, button_unacceptedTrades)
+        elif int(self.unacceptedTrades) >=2 :
+            self.Bind(wx.EVT_BUTTON, self.DoAcceptRejectTrade, button_unacceptedTrades)
+            button_unacceptedTrades.SetForegroundColour('Red')
+
+        statsSizer.Add(button_unacceptedTrades, 0, wx.ALL, 20)
 
         statBox1 = wx.StaticBox(self, wx.ID_ANY, "Response time", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox1Sizer = wx.StaticBoxSizer(statBox1, wx.VERTICAL)
@@ -261,6 +265,10 @@ class MainWindow(wx.Frame):
         dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
         dl.ShowModal()
 
+    def DoAcceptRejectTrade(self, event):
+        dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
+        dar.showModal()
+        
     def DoMyItems(self, event):
         self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
         mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user, user_status = self.user_status)
