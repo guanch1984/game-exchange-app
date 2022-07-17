@@ -1,4 +1,5 @@
 
+from proposetradeform import ProposeTradeForm
 import wx,mysql
 import wx.grid
 
@@ -115,6 +116,131 @@ from
 where
     item_number = {item_number}
     """.format(item_number=item_number)
+
+    return query
+
+
+def form_query_propose_trade(user_email):
+
+    query = """
+    
+WITH items_union AS(
+    Select
+        temp.item_number,
+        title,
+        description,
+        game_condition,
+        game_type,
+        vg_platform,
+        cg_platform,
+        media,
+        number_of_cards,
+        email
+    from
+        Item it
+        INNER JOIN (
+            (
+                select
+                    item_number,
+                    title,
+                    description,
+                    game_condition,
+                    "Video game" as game_type,
+                    email,
+                    null as number_of_cards,
+                    null as cg_platform,
+                    media,
+                    name as vg_platform
+                from
+                    VideoGame
+                    INNER JOIN platform on VideoGame.platform_id = platform.platform_id
+            )
+            UNION
+            (
+                select
+                    item_number,
+                    title,
+                    description,
+                    game_condition,
+                    "Computer game" as game_type,
+                    email,
+                    null as number_of_cards,
+                    platform as cg_platform,
+                    null as media,
+                    null as vg_platform
+                from
+                    ComputerGame
+            )
+            UNION
+            (
+                select
+                    item_number,
+                    title,
+                    description,
+                    game_condition,
+                    "Collectible card game" as game_type,
+                    email,
+                    number_of_cards,
+                    null as cg_platform,
+                    null as media,
+                    null as vg_platform
+                from
+                    CollectibleCardGame
+            )
+            UNION
+            (
+                select
+                    item_number,
+                    title,
+                    description,
+                    game_condition,
+                    "Playing card game" as game_type,
+                    email,
+                    null as number_of_cards,
+                    null as cg_platform,
+                    null as media,
+                    null as vg_platform
+                from
+                    PlayingCardGame
+            )
+            UNION
+            (
+                select
+                    item_number,
+                    title,
+                    description,
+                    game_condition,
+                    "Board game" as game_type,
+                    email,
+                    null as number_of_cards,
+                    null as cg_platform,
+                    null as media,
+                    null as vg_platform
+                from
+                    BoardGame
+            )
+        ) temp ON temp.item_number = it.item_number
+)
+    SELECT
+        count(*) as no_of_trades
+    FROM
+        items_union i
+        INNER JOIN TradePlazaUser u ON i.email = u.email
+    WHERE
+        u.email = '{user_email}'
+        AND item_number IN(
+            
+                SELECT
+                    counter_party_item_number
+                FROM
+                    Trade
+                where trade_status = 'PENDING'
+             )
+
+    """.format(user_email=user_email)
+
+    return query
+
 
 class ItemDetailsForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
@@ -435,6 +561,28 @@ class ItemDetailsForm(wx.Dialog):
 
                 result_pc.SetFont(font_10n)
                 gs.Add(result_pc, 0, wx.EXPAND)
+
+            cursor = self.connection.cursor()
+            query = form_query_propose_trade(self.user_id)
+
+            cursor.execute(query)
+            res = cursor.fetchone()
+
+            if res <2:
+                self.ptBtn = wx.Button(self, label="Propose trade", style=wx.BORDER_NONE)
+                self.ptBtn.SetBackgroundColour('blue')
+                self.ptBtn.SetForegroundColour('white')
+                self.Bind(wx.EVT_BUTTON, self.invoke_propose_trade, self.ptBtn)
+                gs.Add(self.ptBtn, 0, wx.ALL, 5)
+                self.SetSizerAndFit(gs)
         
         main_sizer.Add(gs, 1, wx.EXPAND|wx.ALL, border = 15)
         panel.SetSizer(main_sizer)
+
+    def invoke_propose_trade(self):
+        
+        self.Hide()
+        sr=ProposeTradeForm(self.Parent, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0])
+        r=sr.ShowModal()
+        if r == wx.ID_OK:
+            self.EndModal(wx.ID_OK)
