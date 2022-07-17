@@ -127,14 +127,14 @@ class MainWindow(wx.Frame):
             cursor = self.connection.cursor()
             query = """
             SELECT COUNT(*)
-            FROM (SELECT item_number, email FROM BoardGame WHERE email = "user149@gatech.edu" UNION
-                    SELECT item_number, email FROM CollectibleCardGame WHERE email = "user149@gatech.edu" UNION
-                    SELECT item_number, email FROM ComputerGame WHERE email = "user149@gatech.edu" UNION
-                    SELECT item_number, email FROM PlayingCardGame WHERE email = "user149@gatech.edu" UNION
-                    SELECT item_number, email FROM VideoGame WHERE email = "user149@gatech.edu"
+            FROM (SELECT item_number, email FROM BoardGame WHERE email = "{0}" UNION
+                    SELECT item_number, email FROM CollectibleCardGame WHERE email = "{0}" UNION
+                    SELECT item_number, email FROM ComputerGame WHERE email = "{0}" UNION
+                    SELECT item_number, email FROM PlayingCardGame WHERE email = "{0}" UNION
+                    SELECT item_number, email FROM VideoGame WHERE email = "{0}"
                 ) AS my_item INNER JOIN trade ON trade.proposer_item_number = my_item.item_number
             WHERE trade_status = "PENDING"
-            """
+            """.format(self.logged_user)
 
             cursor.execute(query)
             res = cursor.fetchall()
