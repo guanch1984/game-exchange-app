@@ -124,8 +124,13 @@ class SearchForm(wx.Dialog):
                 wx.MessageBox("Error Searching for items: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
                 return False
 
+        if self.byKeywordRb.GetValue():
+            keyword=self.byKeywordTxt.GetValue().strip()
+        else:
+            keyword=""
+
         self.Hide()
-        sr=SearchResults(self.Parent, user_id=self.user_email,res=res,search_type=search_type,connection=self.connection)
+        sr=SearchResults(self.Parent, user_id=self.user_email,res=res,search_type=search_type,connection=self.connection,keyword=keyword)
         r=sr.ShowModal()
         if r == wx.ID_OK:
             self.EndModal(wx.ID_OK)

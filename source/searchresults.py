@@ -10,6 +10,7 @@ class SearchResults(wx.Dialog):
         self.res = kwargs.pop("res")
         self.user_email=kwargs.pop("user_id")
         self.connection=kwargs.pop("connection")
+        self.keyword=kwargs.pop("keyword")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -83,19 +84,20 @@ class SearchResults(wx.Dialog):
                 self.itemsGrid.SetAttr(c, 5, attr)
 
             # Highlight cell of element that contains the search word criteria
-            if 'keyword' in self.search_details:
-                search_text = self.search_details.split('keyword')[1].strip()
-                
-                if search_text.lower() in str(v[0]).lower():
-                    self.itemsGrid.SetCellBackgroundColour(c, 0, 'light blue')
-                if search_text.lower() in str(v[1]).lower():
-                    self.itemsGrid.SetCellBackgroundColour(c, 1, 'light blue')
-                if search_text.lower() in str(v[2]).lower():
-                    self.itemsGrid.SetCellBackgroundColour(c, 2, 'light blue')
-                if search_text.lower() in str(v[3]).lower():
-                    self.itemsGrid.SetCellBackgroundColour(c, 3, 'light blue')
-                if search_text.lower() in str(v[4]).lower():
-                    self.itemsGrid.SetCellBackgroundColour(c, 4, 'light blue')
+            if self.keyword:
+                if 'keyword' in self.search_details:
+                    search_text = self.search_details.split('keyword')[1].strip()
+                    
+                    if search_text.lower() in str(v[0]).lower():
+                        self.itemsGrid.SetCellBackgroundColour(c, 0, 'light blue')
+                    if search_text.lower() in str(v[1]).lower():
+                        self.itemsGrid.SetCellBackgroundColour(c, 1, 'light blue')
+                    if search_text.lower() in str(v[2]).lower():
+                        self.itemsGrid.SetCellBackgroundColour(c, 2, 'light blue')
+                    if search_text.lower() in str(v[3]).lower():
+                        self.itemsGrid.SetCellBackgroundColour(c, 3, 'light blue')
+                    if search_text.lower() in str(v[4]).lower():
+                        self.itemsGrid.SetCellBackgroundColour(c, 4, 'light blue')
 
         self.itemsGrid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.onGridSelect)
 
