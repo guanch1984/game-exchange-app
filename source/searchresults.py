@@ -60,6 +60,9 @@ class SearchResults(wx.Dialog):
             for i in range(9):
                 self.itemsGrid.SetReadOnly(c, i, True)
 
+            # Highlight cell of element that contains the search word criteria
+            # if  str(v[0])
+
             # Add coloring for response time
             if v[5] is None:
                 pass
@@ -74,7 +77,7 @@ class SearchResults(wx.Dialog):
             else:
                 attr = wx.grid.GridCellAttr()
                 attr.SetTextColour('red')
-                attr.SetFont(wx.Font(self._sysFont.GetPointSize(), wx.DEFAULT, wx.NORMAL, wx.BOLD))
+                attr.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.BOLD))
                 self.itemsGrid.SetAttr(c, 8, attr)
 
         self.itemsGrid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.onGridSelect)
