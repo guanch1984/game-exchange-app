@@ -63,9 +63,12 @@ class ProposeTradeForm(wx.Dialog):
                     SELECT email, item_number, title, game_condition, 'Video Game' AS game_type FROM VideoGame UNION
                     SELECT email, item_number, title, game_condition, 'Computer Game' AS game_type FROM ComputerGame
                 ) as all_games NATURAL JOIN tradeplazauser
-            WHERE (email = "{}" OR nickname = "{}") AND
+            WHERE (email = "test@gatech.edu" OR nickname = "{}") AND
                 item_number NOT IN (
-                    SELECT proposer_item_number as item_number FROM Trade WHERE trade_status = "ACCEPT" OR trade_status = "REJECT"
+                    SELECT proposer_item_number as item_number FROM Trade
+                ) AND
+                item_number NOT IN (
+                    SELECT counter_party_item_number as item_number FROM Trade WHERE trade_status = "ACCEPT" OR trade_status = "PENDING"
                 )
             ORDER BY item_number ASC
         """.format(self.user_id, self.user_id)
