@@ -56,19 +56,16 @@ class ItemDetailForm(wx.Dialog):
         result_in.SetFont(font_10n)
         gs.Add(result_in, 0, wx.EXPAND)
 
-        text_by = wx.StaticText(panel, label="Offered by")
-        text_by.SetFont(font_10b)
-        gs.Add(text_by, 0, wx.EXPAND)
+        tmp = wx.StaticText(panel, -1, label="")
+        gs.Add(tmp, 0, wx.EXPAND)
+        tmp = wx.StaticText(panel, -1, label="")
+        gs.Add(tmp, 0, wx.EXPAND)
 
         user_nickname_query = 'select postal_code, first_name, last_name from TradePlazaUser where email = %(user_id)s'
         query_dict = {'user_id':self.detailresult[5]}
         cursor = self.connection.cursor()
         iterator = cursor.execute(user_nickname_query, query_dict)
         result_user = cursor.fetchall()
-        
-        result_by = wx.StaticText(panel, label= result_user[0][1] + ' ' + result_user[0][2])
-        result_by.SetFont(font_10b)
-        gs.Add(result_by, 0, wx.EXPAND)
 
         text_ar = wx.StaticText(panel, label="Title")
         text_ar.SetFont(font_10b)
