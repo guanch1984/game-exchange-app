@@ -50,6 +50,7 @@ class LoginForm(wx.Dialog):
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 1:
+                self._logged_user = res[0][0]
                 return True
             else:
                 return False
@@ -66,7 +67,6 @@ class LoginForm(wx.Dialog):
         validated = self.ValidateUser(user_id, user_password)
 
         if validated:
-            self._logged_user = user_id
             self.EndModal(wx.ID_OK)
         else:
             res = wx.MessageBox("Invalid user credentials. Retry?", 'Error', wx.OK|wx.CANCEL|wx.ICON_ERROR )
