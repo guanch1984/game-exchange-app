@@ -108,33 +108,46 @@ class TradeHistoryForm(wx.Dialog):
             IF(accept_reject_date is NULL, timestampdiff(DAY, proposed_date, current_date()),
                 timestampdiff(DAY,proposed_date,accept_reject_date)) AS response_time,
             IF(PI.email=%(user_email)s, "Proposer", "Counterparty") AS my_role,
-            PI.title AS propsed_item,
+            PI.title AS proposed_item,
             CI.title AS desired_item,
-            IF(PI.email=%(user_email)s, CU.nickname, PU.nickname) AS other_user
+            IF(PI.email=%(user_email)s, CU.nickname, PU.nickname) AS other_user,
+            PI.item_number,
+            CI.item_number,
+            PI.game_type,
+            CI.game_type,
+            PI.game_condition,
+            CI.game_condition,
+            PI.description,
+            PA.longitude,
+            PA.latitude,
+            CA.longitude,
+            CA.latitude
         FROM Trade AS T left JOIN (
-            SELECT item_number, email, title from BoardGame
+            SELECT item_number, email, title, "Board Game" as game_type, game_condition, description from BoardGame
             UNION
-            SELECT item_number, email, title from PlayingCardGame
+            SELECT item_number, email, title, "Playing Card Game" as game_type, game_condition, description from PlayingCardGame
             UNION
-            SELECT item_number, email, title from CollectibleCardGame
+            SELECT item_number, email, title, "Collectible Card Game" as game_type, game_condition, description from CollectibleCardGame
             UNION
-            SELECT item_number, email, title from ComputerGame
+            SELECT item_number, email, title, "Computer Game" as game_type, game_condition, description from ComputerGame
             UNION
-            SELECT item_number, email, title from VideoGame
+            SELECT item_number, email, title, "Video Game" as game_type, game_condition, description from VideoGame
             ) AS PI ON T.proposer_item_number = PI.item_number 
             left JOIN (
-            SELECT item_number, email, title from BoardGame
+            SELECT item_number, email, title, "Board Game" as game_type, game_condition, description from BoardGame
             UNION
-            SELECT item_number, email, title from PlayingCardGame
+            SELECT item_number, email, title, "Playing Card Game" as game_type, game_condition, description from PlayingCardGame
             UNION
-            SELECT item_number, email, title from CollectibleCardGame
+            SELECT item_number, email, title, "Collectible Card Game" as game_type, game_condition, description from CollectibleCardGame
             UNION
-            SELECT item_number, email, title from ComputerGame
+            SELECT item_number, email, title, "Computer Game" as game_type, game_condition, description from ComputerGame
             UNION
-            SELECT item_number, email, title from VideoGame
+            SELECT item_number, email, title, "Video Game" as game_type, game_condition, description from VideoGame
             ) as CI on T.counter_party_item_number=CI.item_number
             left join TradePlazaUser as PU on PI.email=PU.email
             left join TradePlazaUser as CU on CI.email=CU.email
+            left join Address as PA on PU.postal_code=PA.postal_code
+            left join Address as CA on CU.postal_code=CA.postal_code
         WHERE PI.email= %(user_email)s or CI.email= %(user_email)s
         ORDER BY proposed_date DESC, response_time DESC;
         '''
