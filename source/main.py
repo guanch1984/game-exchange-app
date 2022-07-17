@@ -59,7 +59,7 @@ class MainWindow(wx.Frame):
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT, 5)
 
-        self.welcomeMsg = wx.StaticText(self, label="Welcome," + self.result[0][1] + ' ' + self.result[0][2] + '(' + self.result[0][3] + ')' )
+        self.welcomeMsg = wx.StaticText(self, label="Welcome," + self.result[0][1] + ' ' + self.result[0][2] + '(' + self.result[0][3] + ')!' )
         formSizer.Add(self.welcomeMsg, 0, wx.ALL, 5)
 
         self.PopulateUserData(self.logged_user)
