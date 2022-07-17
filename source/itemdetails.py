@@ -568,7 +568,7 @@ class ItemDetailsForm(wx.Dialog):
             cursor.execute(query)
             res = cursor.fetchone()
 
-            if res <2:
+            if res[0] <2:
                 self.ptBtn = wx.Button(self, label="Propose trade", style=wx.BORDER_NONE)
                 self.ptBtn.SetBackgroundColour('blue')
                 self.ptBtn.SetForegroundColour('white')
