@@ -77,7 +77,8 @@ class SearchResults(wx.Dialog):
                 attr = wx.grid.GridCellAttr()
                 attr.SetTextColour('red')
                 attr.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.BOLD))
-                self.itemsGrid.SetAttr(c, 8, attr)
+                self.itemsGrid.SetAttr(c, 5, attr)
+                print("Colored")
 
 
             # Highlight cell of element that contains the search word criteria
