@@ -266,7 +266,7 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoAcceptRejectTrade(self, event):
-        dar = AcceptRejectForm(self, connection=self.connection, user_email = self.logged_user)
+        dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
         dar.showModal()
         
     def DoMyItems(self, event):
