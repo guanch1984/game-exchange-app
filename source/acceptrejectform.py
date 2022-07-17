@@ -39,7 +39,7 @@ class AcceptRejectForm(wx.Dialog):
                 SELECT item_number, email, title FROM ComputerGame UNION
                 SELECT item_number, email, title FROM PlayingCardGame UNION
                 SELECT item_number, email, title FROM VideoGame
-            ) AS offered_item ON counter_party_item_number = offered_item.item_number INNER JOIN
+            ) AS offered_item ON proposer_item_number = offered_item.item_number INNER JOIN
             tradeplazauser as offered_user ON offered_user.email = offered_item.email INNER JOIN
             address as offered_address ON offered_user.postal_code = offered_address.postal_code INNER JOIN
             (SELECT item_number, email, title FROM BoardGame UNION
@@ -47,7 +47,7 @@ class AcceptRejectForm(wx.Dialog):
                 SELECT item_number, email, title FROM ComputerGame UNION
                 SELECT item_number, email, title FROM PlayingCardGame UNION
                 SELECT item_number, email, title FROM VideoGame
-            ) AS my_item ON proposer_item_number = my_item.item_number INNER JOIN
+            ) AS my_item ON counter_party_item_number = my_item.item_number INNER JOIN
             tradeplazauser as my_user ON my_user.email = my_item.email INNER JOIN
             address as my_address ON my_user.postal_code = my_address.postal_code
         WHERE (my_user.email = "{}" OR my_user.nickname = "{}") AND (trade_status = "PENDING" or trade_status is null)
@@ -126,12 +126,13 @@ class AcceptRejectForm(wx.Dialog):
             self.connection.commit()
         # Go to trade details page for proposed item
         elif event.Col == 1:
-            pass
+            return
         # Go to trade details page for counter item
         elif event.Col == 5:
-            pass
+            return
         # Ignore event
         else:
+            print("Ignored")
             return
 
         print(query)
