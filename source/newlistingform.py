@@ -168,14 +168,22 @@ class NewListingForm(wx.Dialog):
                             SELECT NewItemNum.item_no, %(game_title)s , %(game_description)s, %(game_condition)s, %(game_platform)s, %(user_email)s 
                             FROM (SELECT MAX(item_number) AS item_no FROM Item) AS NewItemNum"""
             elif selStr == "Video game":
-                query_dict['game_platform_id'] = self.gPlatform.GetSelection()
+                query_dict['game_platform_id'] = self.gPlatform.GetSelection() + 1
+                print(self.gPlatform.GetSelection())
                 query_dict['game_media'] = self.gMedia.GetStringSelection()
                 query =     """INSERT INTO VideoGame (item_number, title, description, game_condition, media, platform_id, email)
                             SELECT NewItemNum.item_no, %(game_title)s , %(game_description)s, %(game_condition)s, %(game_media)s, %(game_platform_id)s, %(user_email)s 
                             FROM (SELECT MAX(item_number) AS item_no FROM Item) AS NewItemNum"""                      
+            print(query)
             cursor.execute(query, query_dict)
             self.connection.commit()
-            wx.MessageBox(message="Your item has been listed!\n", caption="Success", style=wx.OK)
+
+            # Get the item number of the newly added item
+            query = """SELECT MAX(item_number) AS item_no FROM Item"""
+            cursor.execute(query)
+            item_number = query.fetchall()[-1][-1]
+
+            wx.MessageBox(message="Your item has been listed!\nYour item number is {}".format(item_number), caption="Success", style=wx.OK)
         except Error as e:
             wx.MessageBox("Error querying the DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             return []
