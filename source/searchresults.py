@@ -1,5 +1,6 @@
 import wx
 import wx.grid
+from itemdetails import ItemDetailsForm
 
 class SearchResults(wx.Dialog):
     def __init__(self, parent,**kwargs):
@@ -7,6 +8,7 @@ class SearchResults(wx.Dialog):
         self.SetIcon(parent.icon)
         self._new_user = None
         self.res = kwargs.pop("res")
+        self.user_email=kwargs.pop("user_id")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -103,4 +105,5 @@ class SearchResults(wx.Dialog):
         # Goto detail view
         if event.Col == 8:
             print("Click on trade details")
-            pass    # TODO: Fill with trade details view later
+            thd = ItemDetailsForm(self, connection=self.connection, user_id = self.user_email, result=self.itemresult[event.GetRow()], user_status = self.user_status)
+            thd.ShowModal()
