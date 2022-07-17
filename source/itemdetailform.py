@@ -101,7 +101,7 @@ class ItemDetailForm(wx.Dialog):
         gs.Add(result_ar, 0, wx.EXPAND)
 
         text_rt = wx.StaticText(panel, label="Response Time")
-        text_rt.SetFont(font_10b)
+        text_rt.SetFont(font_10n)
         gs.Add(text_rt, 0, wx.EXPAND)
 
         result_rt = wx.StaticText(panel, label=self.user_status[1] + ' days')
