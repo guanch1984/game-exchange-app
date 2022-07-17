@@ -138,6 +138,8 @@ class MainWindow(wx.Frame):
 
         formSizer.Add(hSizer, 0, wx.EXPAND)
         self.SetSizer(formSizer)
+        self.Layout()
+        self.Update()
 
     def PopulateUserData(self, user_id):
         self.SetUnacceptedTrades(user_id)
@@ -291,9 +293,9 @@ class MainWindow(wx.Frame):
             iterator = cursor.execute(user_email_query, query_dict)
             self.result = cursor.fetchall()
             self.logged_user = self.result[0][0]
-
             
             self.Show(True)
+            self.RenderMainMenu()
         else:
             self.Close()
 

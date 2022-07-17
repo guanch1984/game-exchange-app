@@ -4,7 +4,6 @@ class ProposeTradeForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
-            self.user_email = kwargs.pop("user_email")
             self.user_id = kwargs.pop("user_id")
             self.tradeitem = kwargs.pop("tradeitem")
             self.tradeitemnumber = kwargs.pop("tradeitemnumber")
@@ -56,7 +55,7 @@ class ProposeTradeForm(wx.Dialog):
                     INNER JOIN address as offered_address ON offered_user.postal_code = offered_address.postal_code
                     CROSS JOIN (SELECT * FROM tradeplazauser WHERE email = "{email}" or nickname = "{nickname}") as my_user
                     INNER JOIN address as my_address ON my_user.postal_code = my_address.postal_code
-        """.format(item_number="1", email=self.user_email, nickname=self.user_id)
+        """.format(item_number="1", email=self.user_id, nickname=self.user_id)
         cursor = self.connection.cursor()
         cursor.execute(query)
 
@@ -86,7 +85,7 @@ class ProposeTradeForm(wx.Dialog):
                     SELECT proposer_item_number as item_number FROM Trade WHERE trade_status = "ACCEPT" OR trade_status = "REJECT"
                 )
             ORDER BY item_number ASC
-        """.format(self.user_email, self.user_id)
+        """.format(self.user_id, self.user_id)
 
         # Generate grid to display data in
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
