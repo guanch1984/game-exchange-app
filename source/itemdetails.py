@@ -326,7 +326,7 @@ class ItemDetailsForm(wx.Dialog):
             text_gt.SetFont(font_10b)
             gs.Add(text_gt, 0, wx.EXPAND)
 
-            result_dgt = wx.StaticText(panel, label=str(self.searchresult[11]))
+            result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
             result_dgt.SetFont(font_10n)
             gs.Add(result_dgt, 0, wx.EXPAND)
 
@@ -447,7 +447,7 @@ class ItemDetailsForm(wx.Dialog):
             text_gt.SetFont(font_10b)
             gs.Add(text_gt, 0, wx.EXPAND)
 
-            result_dgt = wx.StaticText(panel, label=str(self.searchresult[11]))
+            result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
             result_dgt.SetFont(font_10n)
             gs.Add(result_dgt, 0, wx.EXPAND)
 
@@ -548,7 +548,7 @@ class ItemDetailsForm(wx.Dialog):
                 text_condition.SetFont(font_10b)
                 gs.Add(text_condition, 0, wx.EXPAND)
 
-                result_pc = wx.StaticText(panel, label=str(self.searchresult[8]))
+                result_pc = wx.StaticText(panel, label=str(self.searchresult[7]))
 
                 if self.searchresult[8] >=0.0 and self.searchresult[8] <= 25.0:
                     result_pc.SetBackgroundColour("green")
