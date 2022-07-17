@@ -104,8 +104,8 @@ class AcceptRejectForm(wx.Dialog):
         UPDATE Trade SET trade_status = "{}", accept_reject_date = NOW() WHERE proposer_item_number = {} AND counter_party_item_number = {}
         """
         cursor = self.connection.cursor()
-        propose_number = self.itemsGrid.GetCellValue(event.Row, 8)
-        counter_number = self.itemsGrid.GetCellValue(event.Row, 9)
+        propose_number = self.itemsGrid.GetCellValue(event.Row, 9)
+        counter_number = self.itemsGrid.GetCellValue(event.Row, 8)
         
         # Accept trade
         if event.Col == 6:
