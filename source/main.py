@@ -62,25 +62,44 @@ class MainWindow(wx.Frame):
         self.welcomeMsg = wx.StaticText(self, label="Welcome," + self.result[0][1] + ' ' + self.result[0][2] + '(' + self.result[0][3] + ')' )
         formSizer.Add(self.welcomeMsg, 0, wx.ALL, 5)
 
+        self.PopulateUserData(self.logged_user)
+
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
         statsSizer = wx.BoxSizer(wx.VERTICAL)
         # add user stats
         statBox0 = wx.StaticBox(self, wx.ID_ANY, "Unaccepted trades", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox0Sizer = wx.StaticBoxSizer(statBox0, wx.VERTICAL)
-        self.unacceptedTrades = wx.StaticText(self, label=" ", size=(120,-1), style=wx.ALIGN_CENTER)
-        statbox0Sizer.Add(self.unacceptedTrades, 0, wx.EXPAND)
+        text_unacceptedTrades = wx.StaticText(self, label=self.unacceptedTrades, size=(120,-1), style=wx.ALIGN_CENTER)
+        if int(self.unacceptedTrades) >=2 :
+            text_unacceptedTrades.SetForegroundColour('Red')
+        statbox0Sizer.Add(text_unacceptedTrades, 0, wx.EXPAND)
         statsSizer.Add(statbox0Sizer, 0, wx.ALL, 20)
 
         statBox1 = wx.StaticBox(self, wx.ID_ANY, "Response time", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox1Sizer = wx.StaticBoxSizer(statBox1, wx.VERTICAL)
-        self.responseTime = wx.StaticText(self, label=" ", size=(120,-1), style=wx.ALIGN_CENTER)
-        statbox1Sizer.Add(self.responseTime, 0, wx.EXPAND)
+        text_responseTime = wx.StaticText(self, label=self.responseTime, size=(120,-1), style=wx.ALIGN_CENTER)
+        if self.responseTime == 'None':
+            text_responseTime.SetForegroundColour("Black")
+        elif float(self.responseTime) <= 7.0:
+            text_responseTime.SetForegroundColour("Green")
+        elif float(self.responseTime) <= 14.0:
+            text_responseTime.SetForegroundColour("Yellow")
+        elif float(self.responseTime) <= 20.9:
+            text_responseTime.SetForegroundColour("Orange")
+        elif float(self.responseTime) <= 27.9:
+            text_responseTime.SetForegroundColour("Red")
+        else:
+            text_responseTime.SetForegroundColour("Red")
+            text_responseTime.SetFont(boldFont)
+        statbox1Sizer.Add(text_responseTime, 0, wx.EXPAND)
         statsSizer.Add(statbox1Sizer, 0, wx.ALL, 20)
+
+        
 
         statBox2 = wx.StaticBox(self, wx.ID_ANY, "My rank", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox2Sizer = wx.StaticBoxSizer(statBox2, wx.VERTICAL)
-        self.myRank = wx.StaticText(self, label=" ", size=(120,-1), style=wx.ALIGN_CENTER)
-        statbox2Sizer.Add(self.myRank, 0, wx.EXPAND)
+        text_myRank = wx.StaticText(self, label=self.myRank, size=(120,-1), style=wx.ALIGN_CENTER)
+        statbox2Sizer.Add(text_myRank, 0, wx.EXPAND)
         statsSizer.Add(statbox2Sizer, 0, wx.ALL, 20)
 
         hSizer.Add(statsSizer, 0)
@@ -131,14 +150,14 @@ class MainWindow(wx.Frame):
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 0:
-                self.unacceptedTrades.SetLabel('0')
+                self.unacceptedTrades = '0'
             elif res[-1][-1] <=1:
-                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
+                self.unacceptedTrades = str(res[-1][-1])
             else:
-                self.unacceptedTrades.SetLabel(str(res[-1][-1]))
-                self.unacceptedTrades.SetForegroundColour('Red')
+                self.unacceptedTrades = str(res[-1][-1])
+
         except Error as e:
-            self.unacceptedTrades.SetLabel("Error")
+            self.unacceptedTrades = "Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def SetResponseTime(self, msg):
@@ -149,25 +168,19 @@ class MainWindow(wx.Frame):
             res = cursor.fetchall()
            
             if len(res) == 0:
-                self.responseTime.SetLabel('None')
-                self.responseTime.SetForegroundColour("Black")
+                self.responseTime='None'
             elif res[-1][-1] <= 7.0:
-                self.responseTime.SetLabel(str(res[-1][-1]))
-                self.responseTime.SetForegroundColour("Green")
+                self.responseTime=str(res[-1][-1])
             elif res[-1][-1] <= 14.0:
-                self.responseTime.SetLabel(str(res[-1][-1]))
-                self.responseTime.SetForegroundColour("Yellow")
+                self.responseTime=str(res[-1][-1])
             elif res[-1][-1] <= 20.9:
-                self.responseTime.SetLabel(str(res[-1][-1]))
-                self.responseTime.SetForegroundColour("Orange")
+                self.responseTime=str(res[-1][-1])
             elif res[-1][-1] <= 27.9:
-                self.responseTime.SetLabel(str(res[-1][-1]))
-                self.responseTime.SetForegroundColour("Red")
+                self.responseTime=str(res[-1][-1])
             else:
-                self.responseTime.SetLabel(str(res[-1][-1]))
-                self.responseTime.SetForegroundColour("Red")
+                self.responseTime=str(res[-1][-1])
         except Error as e:
-            self.responseTime.SetLabel("Error")
+            self.responseTime="Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def SetMyRank(self, msg):
@@ -178,21 +191,21 @@ class MainWindow(wx.Frame):
             res = cursor.fetchall()
             
             if len(res) == 0:
-                self.myRank.SetLabel('None')
+                self.myRank='None'
             elif res[-1][-1] <=2:
-                self.myRank.SetLabel('Aluminium')
+                self.myRank='Aluminium'
             elif res[-1][-1] <=3:
-                self.myRank.SetLabel('Bronze')
+                self.myRank='Bronze'
             elif res[-1][-1] <=5:
-                self.myRank.SetLabel('Silver')
+                self.myRank='Silver'
             elif res[-1][-1] <=7:
-                self.myRank.SetLabel('Gold')
+                self.myRank='Gold'
             elif res[-1][-1] <=9:
-                self.myRank.SetLabel('Platinum')
+                self.myRank='Platinum'
             else:
-                self.myRank.SetLabel('Alexandinium')
+                self.myRank='Alexandinium'
         except Error as e:
-            self.myRank.SetLabel("Error")
+            self.myRank="Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
     def DoListItem(self, event):
@@ -224,7 +237,7 @@ class MainWindow(wx.Frame):
             self.result = cursor.fetchall()
             self.logged_user = self.result[0][0]
 
-            self.PopulateUserData(lf._logged_user)
+            
             self.Show(True)
         else:
             self.Close()
