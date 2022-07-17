@@ -11,7 +11,7 @@ class SearchForm(wx.Dialog):
         
         super().__init__(parent, title="TradePlaza-Search")
         self.SetIcon(parent.icon)
-        self.user_email = kwargs.pop("user_email")
+        self.user_email = parent.logged_user
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)

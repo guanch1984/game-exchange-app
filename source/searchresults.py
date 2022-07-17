@@ -24,34 +24,50 @@ class SearchResults(wx.Dialog):
 
     def AddItems(self):
         # query the database to get item list
-        itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
-        itemsGrid.CreateGrid(1, 9)
-        itemsGrid.HideRowLabels()
-        itemsGrid.SetColLabelValue(0, "Item #")
-        itemsGrid.SetColLabelValue(1, "Game Type")
-        itemsGrid.SetColLabelValue(2, "Title")
-        itemsGrid.SetColLabelValue(3, "Condition")
-        itemsGrid.SetColLabelValue(4, "Description")
-        itemsGrid.SetColLabelValue(5, "Response Time (days)")
-        itemsGrid.SetColLabelValue(6, "Rank")
-        itemsGrid.SetColLabelValue(7, "Distance")
-        itemsGrid.SetColLabelValue(8, "")
+        self.itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
+        self.itemsGrid.CreateGrid(1, 9)
+        self.itemsGrid.HideRowLabels()
+        self.itemsGrid.SetColLabelValue(0, "Item #")
+        self.itemsGrid.SetColLabelValue(1, "Game Type")
+        self.itemsGrid.SetColLabelValue(2, "Title")
+        self.itemsGrid.SetColLabelValue(3, "Condition")
+        self.itemsGrid.SetColLabelValue(4, "Description")
+        self.itemsGrid.SetColLabelValue(5, "Response Time (days)")
+        self.itemsGrid.SetColLabelValue(6, "Rank")
+        self.itemsGrid.SetColLabelValue(7, "Distance")
+        self.itemsGrid.SetColLabelValue(8, "")
 
-        itemsGrid.SetDefaultRowSize(30)
-        itemsGrid.SetDefaultColSize(150)
-        itemsGrid.SetColSize(4, 300)
-        itemsGrid.SetColSize(5, 60)
-        self.formSizer.Add(itemsGrid, 0, wx.ALL, 5)
+        self.itemsGrid.SetDefaultRowSize(30)
+        self.itemsGrid.SetDefaultColSize(150)
+        self.itemsGrid.SetColSize(4, 300)
+        self.itemsGrid.SetColSize(5, 60)
+        self.formSizer.Add(self.itemsGrid, 0, wx.ALL, 5)
 
         for c,v in enumerate(self.res):
-            itemsGrid.SetCellValue(c, 0, str(v[0]))
-            itemsGrid.SetCellValue(c, 1, str(v[1]))
-            itemsGrid.SetCellValue(c, 2, str(v[2]))
-            itemsGrid.SetCellValue(c, 3, str(v[3]))
-            itemsGrid.SetCellValue(c, 4, str(v[4]))
-            itemsGrid.SetCellValue(c, 5, str(v[5]))
-            itemsGrid.SetCellValue(c, 6, str(v[6]))
-            itemsGrid.SetCellValue(c, 7, str(v[7]))
+            self.itemsGrid.AppendRows(numRows=1)
+            self.itemsGrid.SetCellValue(c, 0, str(v[0]))
+            self.itemsGrid.SetCellValue(c, 1, str(v[1]))
+            self.itemsGrid.SetCellValue(c, 2, str(v[2]))
+            self.itemsGrid.SetCellValue(c, 3, str(v[3]))
+            self.itemsGrid.SetCellValue(c, 4, str(v[4]))
+            self.itemsGrid.SetCellValue(c, 5, str(v[5]))
+            self.itemsGrid.SetCellValue(c, 6, str(v[6]))
+            self.itemsGrid.SetCellValue(c, 7, str(v[7]))
+            self.itemsGrid.SetCellValue(c, 8, "Details")
+            self.itemsGrid.SetCellTextColour(c, 8, 'blue')
+            
+            # Make grid not editable
+            for i in range(9):
+                self.itemsGrid.SetReadOnly(c, i, True)
 
-    
-   
+
+        self.itemsGrid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.onGridSelect)
+
+    def onGridSelect(self, event):
+        # Clear selected elements events
+        self.itemsGrid.ClearSelection()
+
+        # Goto detail view
+        if event.Col == 8:
+            print("Click on trade details")
+            pass    # TODO: Fill with trade details view later
