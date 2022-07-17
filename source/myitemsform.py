@@ -6,7 +6,15 @@ class MyItemsForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
-            self.user_email = kwargs.pop("user_id")
+            self.user_id = kwargs.pop("user_id")
+
+            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            query_dict = {'user_id':self.user_id}
+            cursor = self.connection.cursor()
+            iterator = cursor.execute(user_email_query, query_dict)
+            result = cursor.fetchall()
+
+            self.user_email = result[0][0]
         except:
             self.Destroy()
 
@@ -29,7 +37,6 @@ class MyItemsForm(wx.Dialog):
         tmp = wx.StaticText(self, label="_"*80)
         tmp.SetForegroundColour('blue')
         formSizer.Add(tmp, 0, wx.LEFT|wx.RIGHT, 5)
-
         
         self.AddItems()
         self.SetSizerAndFit(formSizer)
@@ -51,28 +58,30 @@ class MyItemsForm(wx.Dialog):
 
         try:
             cursor = self.connection.cursor()
-            query = "SELECT COUNT(item_number) AS GameCount FROM BoardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query_dict = {'user_email':self.user_email}
+
+            query = "SELECT COUNT(item_number) AS GameCount FROM BoardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_board = res[0][0]
             countGrid.SetCellValue(0, 0, str(num_board))
-            query = "SELECT COUNT(item_number) AS GameCount FROM PlayingCardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM PlayingCardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_card = res[0][0]
             countGrid.SetCellValue(0, 1, str(num_card))
-            query = "SELECT COUNT(item_number) AS GameCount FROM ComputerGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM ComputerGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_computer = res[0][0]
             countGrid.SetCellValue(0, 2, str(num_computer))
-            query = "SELECT COUNT(item_number) AS GameCount FROM CollectibleCardGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM CollectibleCardGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_collectible = res[0][0]
             countGrid.SetCellValue(0, 3, str(num_collectible))
-            query = "SELECT COUNT(item_number) AS GameCount FROM VideoGame WHERE email = \"" + self.Parent.logged_user + "\""
-            cursor.execute(query)
+            query = "SELECT COUNT(item_number) AS GameCount FROM VideoGame WHERE email = %(user_email)s"
+            cursor.execute(query, query_dict)
             res = cursor.fetchall()
             num_video = res[0][0]
             countGrid.SetCellValue(0, 4, str(num_video))
@@ -84,6 +93,7 @@ class MyItemsForm(wx.Dialog):
 
     def AddItems(self):
         # query the database to get item list
+
         query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
 
@@ -112,6 +122,7 @@ class MyItemsForm(wx.Dialog):
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
         self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.OnCellClick, itemsGrid)
         itemsGrid.CreateGrid(total, 6)
+
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Item #")
         itemsGrid.SetColLabelValue(1, "Game Type")
@@ -119,6 +130,7 @@ class MyItemsForm(wx.Dialog):
         itemsGrid.SetColLabelValue(3, "Condition")
         itemsGrid.SetColLabelValue(4, "Description")
         itemsGrid.SetColLabelValue(5, "")
+
         index = 0
         underlineFont = wx.Font(8, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True)
         for i in range(0, len(boardGames)):
@@ -170,6 +182,7 @@ class MyItemsForm(wx.Dialog):
             itemsGrid.SetCellValue(index + i, 5, "detail")
             itemsGrid.SetCellTextColour(index + i, 5, "blue")
             itemsGrid.SetCellFont(index + i, 5, underlineFont)
+
         itemsGrid.SetDefaultRowSize(30)
         itemsGrid.SetDefaultColSize(150)
         itemsGrid.SetColSize(4, 300)

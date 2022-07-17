@@ -1,18 +1,26 @@
 import wx
 import wx.grid
+from tradehistorydetailform import TradeHistoryDetailForm
 
 class TradeHistoryForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
         try:
             self.connection = kwargs.pop("connection")
             self.user_id = kwargs.pop("user_id")
+
+            user_email_query = 'select email from TradePlazaUser where email = %(user_id)s or nickname = %(user_id)s'
+            query_dict = {'user_id':self.user_id}
+            cursor = self.connection.cursor()
+            iterator = cursor.execute(user_email_query, query_dict)
+            result = cursor.fetchall()
+
+            self.user_email = result[0][0]
         except:
             self.Destroy()
 
         super().__init__(parent, title="TradePlaza-Trade History")
         self.SetIcon(parent.icon)
         self._new_user = None
-        self.user_email = kwargs.pop("user_email")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -67,6 +75,7 @@ class TradeHistoryForm(wx.Dialog):
         iterator = cursor.execute(trade_summary_query, query_dict)
         result = cursor.fetchall()
         n = len(result)
+        
         countGrid = wx.grid.Grid(self, wx.ID_ANY)
         countGrid.CreateGrid(n, 5)
 
@@ -80,29 +89,15 @@ class TradeHistoryForm(wx.Dialog):
         if result:
             for i in range(n):
                 for j in range(5):
+                    countGrid.SetCellValue(i,j, str(result[i][j]))
                     if j==4 and float(result[i][j])>=0.5:
-                        countGrid.SetBackgroundColour(i,j,wx.Colour(red))
-                    else:
-                        countGrid.SetCellValue(i,j, str(result[i][j]))
+                        countGrid.SetBackgroundColour(i,j,"red")
         else:
             print('no result found!')      
 
         countGrid.SetDefaultRowSize(30)
         countGrid.SetDefaultColSize(100)
         self.formSizer.Add(countGrid, 0, wx.ALL, 4)
-
-        # Example code to show how to populate grid with data
-        countGrid.SetCellValue(0, 0, "Proposer")
-        countGrid.SetCellValue(0, 1, "2")
-        countGrid.SetCellValue(0, 2, "1")
-        countGrid.SetCellValue(0, 3, "1")
-        countGrid.SetCellValue(0, 4, "50.0%")
-        countGrid.SetCellBackgroundColour(0, 4, "red")
-        countGrid.SetCellValue(1, 0, "Counterparty")
-        countGrid.SetCellValue(1, 1, "2")
-        countGrid.SetCellValue(1, 2, "2")
-        countGrid.SetCellValue(1, 3, "0")
-        countGrid.SetCellValue(1, 4, "0.0%")
 
     def AddDetail(self):
         # query the database to get trade list
@@ -113,44 +108,58 @@ class TradeHistoryForm(wx.Dialog):
             IF(accept_reject_date is NULL, timestampdiff(DAY, proposed_date, current_date()),
                 timestampdiff(DAY,proposed_date,accept_reject_date)) AS response_time,
             IF(PI.email=%(user_email)s, "Proposer", "Counterparty") AS my_role,
-            PI.title AS propsed_item,
+            PI.title AS proposed_item,
             CI.title AS desired_item,
-            IF(PI.email=%(user_email)s, CU.nickname, PU.nickname) AS other_user
+            IF(PI.email=%(user_email)s, CU.nickname, PU.nickname) AS other_user,
+            PI.item_number,
+            CI.item_number,
+            PI.game_type,
+            CI.game_type,
+            PI.game_condition,
+            CI.game_condition,
+            PI.description,
+            PA.longitude,
+            PA.latitude,
+            CA.longitude,
+            CA.latitude
         FROM Trade AS T left JOIN (
-            SELECT item_number, email, title from BoardGame
+            SELECT item_number, email, title, "Board Game" as game_type, game_condition, description from BoardGame
             UNION
-            SELECT item_number, email, title from PlayingCardGame
+            SELECT item_number, email, title, "Playing Card Game" as game_type, game_condition, description from PlayingCardGame
             UNION
-            SELECT item_number, email, title from CollectibleCardGame
+            SELECT item_number, email, title, "Collectible Card Game" as game_type, game_condition, description from CollectibleCardGame
             UNION
-            SELECT item_number, email, title from ComputerGame
+            SELECT item_number, email, title, "Computer Game" as game_type, game_condition, description from ComputerGame
             UNION
-            SELECT item_number, email, title from VideoGame
+            SELECT item_number, email, title, "Video Game" as game_type, game_condition, description from VideoGame
             ) AS PI ON T.proposer_item_number = PI.item_number 
             left JOIN (
-            SELECT item_number, email, title from BoardGame
+            SELECT item_number, email, title, "Board Game" as game_type, game_condition, description from BoardGame
             UNION
-            SELECT item_number, email, title from PlayingCardGame
+            SELECT item_number, email, title, "Playing Card Game" as game_type, game_condition, description from PlayingCardGame
             UNION
-            SELECT item_number, email, title from CollectibleCardGame
+            SELECT item_number, email, title, "Collectible Card Game" as game_type, game_condition, description from CollectibleCardGame
             UNION
-            SELECT item_number, email, title from ComputerGame
+            SELECT item_number, email, title, "Computer Game" as game_type, game_condition, description from ComputerGame
             UNION
-            SELECT item_number, email, title from VideoGame
+            SELECT item_number, email, title, "Video Game" as game_type, game_condition, description from VideoGame
             ) as CI on T.counter_party_item_number=CI.item_number
             left join TradePlazaUser as PU on PI.email=PU.email
             left join TradePlazaUser as CU on CI.email=CU.email
+            left join Address as PA on PU.postal_code=PA.postal_code
+            left join Address as CA on CU.postal_code=CA.postal_code
         WHERE PI.email= %(user_email)s or CI.email= %(user_email)s
         ORDER BY proposed_date DESC, response_time DESC;
         '''
         query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_detail_query, query_dict)
-        result = cursor.fetchall()
-        n = len(result)
+        self.detailresult = cursor.fetchall()
+        n = len(self.detailresult)
 
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
         itemsGrid.CreateGrid(n, 9)
+        self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.OnCellClick, itemsGrid)
 
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Proposed\nDate")
@@ -164,7 +173,7 @@ class TradeHistoryForm(wx.Dialog):
         itemsGrid.SetColLabelValue(8, "")
         
         underlineFont = wx.Font(8, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True)
-        if result:
+        if self.detailresult:
             for i in range(n):
                 for j in range(9):
                     if j ==8 :
@@ -172,7 +181,7 @@ class TradeHistoryForm(wx.Dialog):
                         itemsGrid.SetCellTextColour(i,j, "blue")
                         itemsGrid.SetCellFont(i,j, underlineFont)
                     else:
-                        itemsGrid.SetCellValue(i,j, str(result[i][j]))
+                        itemsGrid.SetCellValue(i,j, str(self.detailresult[i][j]))
         else:
             print('no result found!')  
 
@@ -182,8 +191,9 @@ class TradeHistoryForm(wx.Dialog):
         self.formSizer.Add(itemsGrid, 0, wx.ALL, 8)
 
     def OnCellClick(self, event):
-        print("row: " + str(event.GetRow()) + " clicked")
-        print("col: " + str(event.GetCol()) + " clicked")
+        if event.GetCol() == 8:
+            self.DoTradeHistorDetail(event)
 
-    
-   
+    def DoTradeHistorDetail(self, event):
+        thd = TradeHistoryDetailForm(self, connection=self.connection, user_id = self.user_email, result=self.detailresult[event.GetRow()])
+        thd.ShowModal()

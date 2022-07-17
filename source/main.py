@@ -34,6 +34,7 @@ class MainWindow(wx.Frame):
         db_config = {'host': 'localhost', 'user': 'root', 'password': 'admin', 'database':'cs6400_summer2022_team065'}
         try:
             self.connection = MySQLConnection(**db_config)
+            self.cursor = self.connection.cursor()
         except Error as e:
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             self.Close()
@@ -231,12 +232,6 @@ class MainWindow(wx.Frame):
             self.Show(True)
         else:
             self.Close()
-        #user_email_query = 'select email from TradePlazaUser where email = %s or nickname = %s '
-        #query_tuple = (lf._logged_user, lf._logged_user)
-        #self.cursor.execute(user_email_query, query_tuple)
-        #result = self.cursor.fetchall()
-        #self.user_email = result[0][0]
-        # print(self.user_email)
 
     def DoLogout(self, event):
         self.logged_user == None
