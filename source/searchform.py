@@ -125,7 +125,7 @@ class SearchForm(wx.Dialog):
                 return False
 
         self.Hide()
-        sr=SearchResults(self.Parent, user_id=self.user_email,res=res,search_type=search_type)
+        sr=SearchResults(self.Parent, user_id=self.user_email,res=res,search_type=search_type,connection=self.connection)
         r=sr.ShowModal()
         if r == wx.ID_OK:
             self.EndModal(wx.ID_OK)

@@ -9,6 +9,7 @@ class SearchResults(wx.Dialog):
         self._new_user = None
         self.res = kwargs.pop("res")
         self.user_email=kwargs.pop("user_id")
+        self.connection=kwargs.pop("connection")
 
         self.SetBackgroundColour('white')
         formSizer = wx.BoxSizer(wx.VERTICAL)
@@ -105,5 +106,5 @@ class SearchResults(wx.Dialog):
         # Goto detail view
         if event.Col == 8:
             print("Click on trade details")
-            thd = ItemDetailsForm(self, connection=self.connection, user_id = self.user_email, result=self.itemresult[event.GetRow()], user_status = self.user_status)
+            thd = ItemDetailsForm(self, connection=self.connection, user_id = self.user_email, result=self.res[event.GetRow()])
             thd.ShowModal()
