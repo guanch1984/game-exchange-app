@@ -7,6 +7,7 @@ class ProposeTradeForm(wx.Dialog):
             self.user_id = kwargs.pop("user_id")
             self.tradeitem = kwargs.pop("tradeitem")
             self.tradeitemnumber = kwargs.pop("tradeitemnumber")
+            self.distance = kwargs.pop("distance")
         except:
             self.Destroy()
         super().__init__(parent, title="TradePlaza")
@@ -44,27 +45,7 @@ class ProposeTradeForm(wx.Dialog):
         self.SetSizerAndFit(formSizer)
 
     def CheckDistanceWarning(self):
-        query = """
-            SELECT (3958.75 * 2 * POWER(ATAN(SQRT((POWER(SIN((offered_address.Latitude - my_address.Latitude) / 2), 2) + COS(my_address.Latitude) * COS(offered_address.Latitude) * POWER(SIN((offered_address.Longitude - my_address.Longitude) / 2), 2))), SQRT(1 - (POWER(SIN((offered_address.Latitude - my_address.Latitude) / 2), 2) + COS(my_address.Latitude) * COS(offered_address.Latitude) * POWER(SIN((offered_address.Longitude - my_address.Longitude) / 2), 2)))), 2)) as distance
-            FROM (SELECT item_number, email FROM BoardGame WHERE item_number = {item_number} UNION
-                        SELECT item_number, email FROM CollectibleCardGame WHERE item_number = {item_number} UNION
-                        SELECT item_number, email FROM ComputerGame WHERE item_number = {item_number} UNION
-                        SELECT item_number, email FROM PlayingCardGame WHERE item_number = {item_number} UNION
-                        SELECT item_number, email FROM VideoGame WHERE item_number = {item_number}
-                    ) as offered_item INNER JOIN tradeplazauser as offered_user on offered_user.email = offered_item.email
-                    INNER JOIN address as offered_address ON offered_user.postal_code = offered_address.postal_code
-                    CROSS JOIN (SELECT * FROM tradeplazauser WHERE email = "{email}" or nickname = "{nickname}") as my_user
-                    INNER JOIN address as my_address ON my_user.postal_code = my_address.postal_code
-        """.format(item_number=str(self.tradeitemnumber), email=self.user_id, nickname=self.user_id)
-        cursor = self.connection.cursor()
-        cursor.execute(query)
-
-        data = cursor.fetchall()
-        distance = 0
-        if (data is not None and len(data) > 0):
-            distance = data[0][0]
-            print("Found distance: {}".format(distance))
-
+        distance = self.distance
         distanceLabel = wx.StaticText(self, label="{1}The other user is {0} miles away!{1}".format(str(distance), " " * 30))
         distanceLabel.SetBackgroundColour('blue')
         if distance >= 100:

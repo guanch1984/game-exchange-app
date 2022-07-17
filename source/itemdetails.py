@@ -582,7 +582,7 @@ class ItemDetailsForm(wx.Dialog):
     def invoke_propose_trade(self, event):
         
         self.Hide()
-        sr=ProposeTradeForm(self.Parent, connection=self.connection, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
+        sr=ProposeTradeForm(self.Parent, distance=self.searchresult[7], connection=self.connection, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
         r=sr.ShowModal()
         if r == wx.ID_OK:
             self.EndModal(wx.ID_OK)
