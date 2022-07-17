@@ -181,7 +181,7 @@ class NewListingForm(wx.Dialog):
             query = """SELECT MAX(item_number) AS item_no FROM Item"""
             cursor.execute(query)
             item_number = cursor.fetchall()[-1][-1]
-            wx.MessageBox(message="Your item (ID: {}) has been listed!".format(item_number), caption="Success", style=wx.OK)
+            wx.MessageBox(message="Your item has been listed!\nYour item number is {}".format(item_number), caption="Success", style=wx.OK)
             self.EndModal(wx.OK)
         except Error as e:
             wx.MessageBox("Error querying the DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
