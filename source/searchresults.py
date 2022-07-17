@@ -12,7 +12,9 @@ class SearchResults(wx.Dialog):
         formSizer = wx.BoxSizer(wx.VERTICAL)
         self.formSizer = formSizer
 
-        tmp = wx.StaticText(self, label="Search results: " + kwargs.pop("search_type"))
+        self.search_details = kwargs.pop("search_type")
+
+        tmp = wx.StaticText(self, label="Search results: " + self.search_details)
         formSizer.Add(tmp, 0, wx.LEFT, 5)
         tmp = wx.StaticText(self, label="_"*80)
         tmp.SetForegroundColour('blue')
@@ -60,9 +62,6 @@ class SearchResults(wx.Dialog):
             for i in range(9):
                 self.itemsGrid.SetReadOnly(c, i, True)
 
-            # Highlight cell of element that contains the search word criteria
-            # if  str(v[0])
-
             # Add coloring for response time
             if v[5] is None:
                 pass
@@ -79,6 +78,22 @@ class SearchResults(wx.Dialog):
                 attr.SetTextColour('red')
                 attr.SetFont(wx.Font(9, wx.DEFAULT, wx.NORMAL, wx.BOLD))
                 self.itemsGrid.SetAttr(c, 8, attr)
+
+
+            # Highlight cell of element that contains the search word criteria
+            if 'keyword' in self.search_details:
+                search_text = self.search_details.split('keyword')[1].strip()
+                
+                if search_text in str(v[0]):
+                    self.itemsGrid.SetCellBackgroundColour(c, 0, 'light blue')
+                elif search_text in str(v[1]):
+                    self.itemsGrid.SetCellBackgroundColour(c, 1, 'light blue')
+                elif search_text in str(v[2]):
+                    self.itemsGrid.SetCellBackgroundColour(c, 2, 'light blue')
+                elif search_text in str(v[3]):
+                    self.itemsGrid.SetCellBackgroundColour(c, 3, 'light blue')
+                elif search_text in str(v[4]):
+                    self.itemsGrid.SetCellBackgroundColour(c, 4, 'light blue')
 
         self.itemsGrid.Bind(wx.grid.EVT_GRID_SELECT_CELL, self.onGridSelect)
 
