@@ -157,7 +157,7 @@ class NewListingForm(wx.Dialog):
                 query =     """INSERT INTO PlayingCardGame (item_number, title, description, game_condition, email)
                             SELECT NewItemNum.item_no, %(game_title)s , %(game_description)s, %(game_condition)s,%(user_email)s 
                             FROM (SELECT MAX(item_number) AS item_no FROM Item) AS NewItemNum"""   
-            elif selStr == "Playing card game":
+            elif selStr == "Collectible card game":
                 query_dict['no_cards'] = self.nCards.GetValue() 
                 query =     """INSERT INTO CollectibleCardGame (item_number, title, description, game_condition, number_of_Cards, email)
                             SELECT NewItemNum.item_no, %(game_title)s , %(game_description)s, %(game_condition)s, %(no_cards)s, %(user_email)s 
@@ -174,16 +174,15 @@ class NewListingForm(wx.Dialog):
                 query =     """INSERT INTO VideoGame (item_number, title, description, game_condition, media, platform_id, email)
                             SELECT NewItemNum.item_no, %(game_title)s , %(game_description)s, %(game_condition)s, %(game_media)s, %(game_platform_id)s, %(user_email)s 
                             FROM (SELECT MAX(item_number) AS item_no FROM Item) AS NewItemNum"""                      
-            print(query)
             cursor.execute(query, query_dict)
             self.connection.commit()
 
             # Get the item number of the newly added item
             query = """SELECT MAX(item_number) AS item_no FROM Item"""
             cursor.execute(query)
-            item_number = query.fetchall()[-1][-1]
-
-            wx.MessageBox(message="Your item has been listed!\nYour item number is {}".format(item_number), caption="Success", style=wx.OK)
+            item_number = cursor.fetchall()[-1][-1]
+            wx.MessageBox(message="Your item (ID: {}) has been listed!".format(item_number), caption="Success", style=wx.OK)
+            self.EndModal(wx.OK)
         except Error as e:
             wx.MessageBox("Error querying the DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             return []
