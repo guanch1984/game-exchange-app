@@ -1,5 +1,6 @@
 import wx
 import wx.grid
+from tradehistorydetailform import TradeHistoryDetailForm
 
 class TradeHistoryForm(wx.Dialog):
     def __init__(self, parent, **kwargs):
@@ -87,7 +88,6 @@ class TradeHistoryForm(wx.Dialog):
 
         if result:
             for i in range(n):
-                print(result[i])
                 for j in range(5):
                     countGrid.SetCellValue(i,j, str(result[i][j]))
                     if j==4 and float(result[i][j])>=0.5:
@@ -141,11 +141,12 @@ class TradeHistoryForm(wx.Dialog):
         query_dict = {'user_email':self.user_email}
         cursor = self.connection.cursor()
         iterator = cursor.execute(trade_detail_query, query_dict)
-        result = cursor.fetchall()
-        n = len(result)
+        self.detailresult = cursor.fetchall()
+        n = len(self.detailresult)
 
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
         itemsGrid.CreateGrid(n, 9)
+        self.Bind(wx.grid.EVT_GRID_CELL_LEFT_CLICK, self.OnCellClick, itemsGrid)
 
         itemsGrid.HideRowLabels()
         itemsGrid.SetColLabelValue(0, "Proposed\nDate")
@@ -159,7 +160,7 @@ class TradeHistoryForm(wx.Dialog):
         itemsGrid.SetColLabelValue(8, "")
         
         underlineFont = wx.Font(8, wx.FONTFAMILY_MODERN, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, True)
-        if result:
+        if self.detailresult:
             for i in range(n):
                 for j in range(9):
                     if j ==8 :
@@ -167,7 +168,7 @@ class TradeHistoryForm(wx.Dialog):
                         itemsGrid.SetCellTextColour(i,j, "blue")
                         itemsGrid.SetCellFont(i,j, underlineFont)
                     else:
-                        itemsGrid.SetCellValue(i,j, str(result[i][j]))
+                        itemsGrid.SetCellValue(i,j, str(self.detailresult[i][j]))
         else:
             print('no result found!')  
 
@@ -177,8 +178,9 @@ class TradeHistoryForm(wx.Dialog):
         self.formSizer.Add(itemsGrid, 0, wx.ALL, 8)
 
     def OnCellClick(self, event):
-        print("row: " + str(event.GetRow()) + " clicked")
-        print("col: " + str(event.GetCol()) + " clicked")
+        if event.GetCol() == 8:
+            self.DoTradeHistorDetail(event)
 
-    
-   
+    def DoTradeHistorDetail(self, event):
+        thd = TradeHistoryDetailForm(self, connection=self.connection, user_id = self.user_email, result=self.detailresult[event.GetRow()])
+        thd.ShowModal()
