@@ -262,7 +262,8 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoMyItems(self, event):
-        mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user)
+        self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
+        mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user, user_status = self.user_status)
         mi.ShowModal()
 
     def DoSearchItem(self, event):
