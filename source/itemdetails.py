@@ -263,17 +263,17 @@ class ItemDetailsForm(wx.Dialog):
 
             if self.user_id != self.itemresult[4]:
                 self.is_another_user = True
-                cursor.execute("select nickname, postal_code from TradePlazaUser where email={0}".format(self.itemresult[4]))
+                cursor.execute(" select nickname, postal_code from TradePlazaUser where email='{0}' ".format(self.itemresult[4]))
                 res = cursor.fetchone()
                 self.another_u_nickname = res[0]
                 self.another_u_pc = res[1]
 
-                cursor.execute("select city, state from Address where postal_code={0}".format(self.another_u_pc))
+                cursor.execute(" select city, state from Address where postal_code='{0}' ".format(self.another_u_pc))
                 res = cursor.fetchone()
                 self.another_u_city = res[0]
                 self.another_u_state = res[1]
 
-                cursor.execute("select postal_code from TradePlazaUser where email={0}".format(self.user_id))
+                cursor.execute(" select postal_code from TradePlazaUser where email='{0}' ".format(self.user_id))
                 res = cursor.fetchone()
                 if res[0] != self.another_u_pc:
                     self.is_diff_pc = True
@@ -550,13 +550,13 @@ class ItemDetailsForm(wx.Dialog):
 
                 result_pc = wx.StaticText(panel, label=str(self.searchresult[7]))
 
-                if self.searchresult[8] >=0.0 and self.searchresult[8] <= 25.0:
+                if self.searchresult[7] >=0.0 and self.searchresult[7] <= 25.0:
                     result_pc.SetBackgroundColour("green")
-                elif self.searchresult[8] >=25.0 and self.searchresult[8] <= 50.0:
+                elif self.searchresult[7] >=25.0 and self.searchresult[7] <= 50.0:
                     result_pc.SetBackgroundColour("yellow")
-                elif self.searchresult[8] >=50.0 and self.searchresult[8] <= 100.0:
+                elif self.searchresult[7] >=50.0 and self.searchresult[7] <= 100.0:
                     result_pc.SetBackgroundColour("orange")
-                elif self.searchresult[8] >100.0:
+                elif self.searchresult[7] >100.0:
                     result_pc.SetBackgroundColour("red")
 
                 result_pc.SetFont(font_10n)
@@ -568,7 +568,7 @@ class ItemDetailsForm(wx.Dialog):
             cursor.execute(query)
             res = cursor.fetchone()
 
-            if res <2:
+            if res[0] <2:
                 self.ptBtn = wx.Button(self, label="Propose trade", style=wx.BORDER_NONE)
                 self.ptBtn.SetBackgroundColour('blue')
                 self.ptBtn.SetForegroundColour('white')
