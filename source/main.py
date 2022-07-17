@@ -135,15 +135,15 @@ class MainWindow(wx.Frame):
         self.SetSizer(formSizer)
 
     def PopulateUserData(self, user_id):
-        self.SetUnacceptedTrades("")
-        self.SetMyRank("")
-        self.SetResponseTime("")
+        self.SetUnacceptedTrades(user_id)
+        self.SetMyRank(user_id)
+        self.SetResponseTime(user_id)
         pass
 
     def SetWelcomeMsg(self, msg):
         self.welcomeMsg.SetLabel(msg)
 
-    def SetUnacceptedTrades(self, msg):
+    def SetUnacceptedTrades(self, user_id):
         try:
             cursor = self.connection.cursor()
             query = """Select count(*) from Trade Inner Join 
@@ -161,7 +161,7 @@ class MainWindow(wx.Frame):
                  Where "{email}" = ItemJoin.email) AS TradeJoin 
                  ON Trade.counter_party_item_number= TradeJoin.item_number 
                  where Trade.trade_status='PENDING' 
-                 GROUP BY TradeJoin.email;""".format(email=self.logged_user)
+                 GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
             if len(res) == 0:
@@ -175,7 +175,7 @@ class MainWindow(wx.Frame):
             self.unacceptedTrades = "Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
-    def SetResponseTime(self, msg):
+    def SetResponseTime(self, user_id):
         try:
             cursor = self.connection.cursor()
             query = """Select ROUND(avg(TIMESTAMPDIFF(DAY,proposed_date, accept_reject_date)),1) from Trade Inner Join
@@ -193,7 +193,7 @@ class MainWindow(wx.Frame):
                     AS ItemJoin where "{email}" = ItemJoin.email) 
                     AS TradeJoin ON Trade.counter_party_item_number= TradeJoin.item_number 
                     where Trade.trade_status='ACCEPT' or Trade.trade_status='REJECT' 
-                    GROUP BY TradeJoin.email;""".format(email=self.logged_user)
+                    GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
            
@@ -213,7 +213,7 @@ class MainWindow(wx.Frame):
             self.responseTime="Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
 
-    def SetMyRank(self, msg):
+    def SetMyRank(self, user_id):
         try:
             cursor = self.connection.cursor()
             query = """Select count(*) from Trade Inner Join
@@ -232,7 +232,7 @@ class MainWindow(wx.Frame):
                     ON Trade.counter_party_item_number= TradeJoin.item_number 
                     OR Trade.proposer_item_number= TradeJoin.item_number 
                     where Trade.trade_status='ACCEPT' 
-                    GROUP BY TradeJoin.email;""".format(email=self.logged_user)
+                    GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
             
