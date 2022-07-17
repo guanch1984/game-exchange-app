@@ -77,9 +77,10 @@ class MainWindow(wx.Frame):
 
         statBox1 = wx.StaticBox(self, wx.ID_ANY, "Response time", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox1Sizer = wx.StaticBoxSizer(statBox1, wx.VERTICAL)
-        text_responseTime = wx.StaticText(self, label=self.responseTime, size=(120,-1), style=wx.ALIGN_CENTER)
+        text_responseTime = wx.StaticText(self, label=self.responseTime + ' days', size=(120,-1), style=wx.ALIGN_CENTER)
         if self.responseTime == 'None':
             text_responseTime.SetForegroundColour("Black")
+            text_responseTime.SetLabel(self.responseTime)
         elif float(self.responseTime) <= 7.0:
             text_responseTime.SetForegroundColour("Green")
         elif float(self.responseTime) <= 14.0:
