@@ -168,8 +168,6 @@ class MainWindow(wx.Frame):
             res = cursor.fetchall()
             if len(res) == 0:
                 self.unacceptedTrades = '0'
-            elif res[-1][-1] <=1:
-                self.unacceptedTrades = str(res[-1][-1])
             else:
                 self.unacceptedTrades = str(res[-1][-1])
 
@@ -262,7 +260,7 @@ class MainWindow(wx.Frame):
 
     def DoAcceptRejectTrade(self, event):
         dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
-        dar.showModal()
+        dar.ShowModal()
         
     def DoMyItems(self, event):
         self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
