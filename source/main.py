@@ -189,25 +189,31 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
-            self.responseTime = res[-1][-1]
+            
             if len(res) == 0:
                 self.text_responseTime.SetForegroundColour("Black")
                 self.text_responseTime.SetLabel("N/A")
+                self.responseTime = "N/A"
             elif res[-1][-1] <= 7.0:
                 self.text_responseTime.SetForegroundColour("Green")
                 self.text_responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime = str(res[-1][-1])
             elif res[-1][-1] <= 14.0:
                 self.text_responseTime.SetForegroundColour("Yellow")
                 self.text_responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime = str(res[-1][-1])
             elif res[-1][-1] <= 20.9:
                 self.text_responseTime.SetForegroundColour("Orange")
                 self.text_responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime = str(res[-1][-1])
             elif res[-1][-1] <= 27.9:
                 self.text_responseTime.SetForegroundColour("Red")
                 self.text_responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime = str(res[-1][-1])
             else:
                 self.text_responseTime.SetForegroundColour("Red")
                 self.text_responseTime.SetLabel(str(res[-1][-1]))
+                self.responseTime = str(res[-1][-1])
                 boldFont = wx.Font(20, family = wx.FONTFAMILY_MODERN, style = wx.FONTSTYLE_NORMAL, weight = wx.FONTWEIGHT_BOLD)
                 self.text_responseTime.SetFont(boldFont)
 

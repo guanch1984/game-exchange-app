@@ -100,9 +100,9 @@ class ItemDetailForm(wx.Dialog):
         text_rt.SetFont(font_10n)
         gs.Add(text_rt, 0, wx.EXPAND)
 
-        result_rt = wx.StaticText(panel, label=str(self.user_status[0]) + ' days')
+        result_rt = wx.StaticText(panel, label=self.user_status[0] + ' days')
         result_rt.SetFont(font_10n)
-        if self.user_status[0] == 'None':
+        if self.user_status[0] == 'N/A':
             result_rt.SetForegroundColour("Black")
         elif float(self.user_status[0]) <= 7.0:
             result_rt.SetForegroundColour("Green")
