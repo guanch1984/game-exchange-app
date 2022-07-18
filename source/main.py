@@ -69,7 +69,7 @@ class MainWindow(wx.Frame):
         # add user stats
         statBox1 = wx.StaticBox(self, wx.ID_ANY, "Unaccepted trades", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox1Sizer = wx.StaticBoxSizer(statBox1, wx.VERTICAL)
-        self.button_unacceptedTrades = wx.Button(self, label="", style=wx.BORDER_NONE, size=(100,30))
+        self.button_unacceptedTrades = wx.Button(self, label="", size=(100,30))
         self.button_unacceptedTrades .SetBackgroundColour('white')
         self.button_unacceptedTrades .SetForegroundColour('black')
         statbox1Sizer.Add(self.button_unacceptedTrades, 0)
@@ -285,6 +285,7 @@ class MainWindow(wx.Frame):
     def DoSearchItem(self, event):
         sf = SearchForm(self, connection=self.connection)
         sf.ShowModal()
+        self.PopulateUserData(self.logged_user)
 
     def DoTradeHistory(self,event):
         th = TradeHistoryForm(self, connection=self.connection, user_id = self.logged_user)

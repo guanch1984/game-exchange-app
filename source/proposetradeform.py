@@ -63,7 +63,7 @@ class ProposeTradeForm(wx.Dialog):
                     SELECT email, item_number, title, game_condition, 'Video Game' AS game_type FROM VideoGame UNION
                     SELECT email, item_number, title, game_condition, 'Computer Game' AS game_type FROM ComputerGame
                 ) as all_games NATURAL JOIN tradeplazauser
-            WHERE (email = "test@gatech.edu" OR nickname = "{}") AND
+            WHERE (email = "{email}" OR nickname = "{nickname}") AND
                 item_number NOT IN (
                     SELECT proposer_item_number as item_number FROM Trade
                 ) AND
@@ -71,7 +71,7 @@ class ProposeTradeForm(wx.Dialog):
                     SELECT counter_party_item_number as item_number FROM Trade WHERE trade_status = "ACCEPT" OR trade_status = "PENDING"
                 )
             ORDER BY item_number ASC
-        """.format(self.user_id, self.user_id)
+        """.format(email=self.user_id, nickname=self.user_id)
 
         # Generate grid to display data in
         itemsGrid = wx.grid.Grid(self, wx.ID_ANY)
@@ -121,4 +121,4 @@ class ProposeTradeForm(wx.Dialog):
         
         # Confirmation message to bring user back to the main page
         res = wx.MessageBox("Trade proposed. Returning to main menu.", 'Ok', wx.OK )
-        self.EndModal(wx.ID_EXIT)
+        self.EndModal(wx.ID_OK)

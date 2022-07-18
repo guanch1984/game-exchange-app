@@ -109,4 +109,6 @@ class SearchResults(wx.Dialog):
         if event.Col == 8:
             #print("Click on trade details")
             thd = ItemDetailsForm(self, connection=self.connection, user_id = self.user_email, result=self.res[event.GetRow()])
-            thd.ShowModal()
+            res = thd.ShowModal()
+            if res == wx.ID_OK:
+                self.EndModal(wx.ID_OK)
