@@ -1,4 +1,4 @@
-
+from mysql.connector import Error
 from proposetradeform import ProposeTradeForm
 import wx
 
@@ -249,8 +249,7 @@ class ItemDetailsForm(wx.Dialog):
             self.is_diff_pc = False
         except:
             self.Destroy()
-
-        super().__init__(parent, title="TradePlaza-Item Details", size=(700,400))
+        super().__init__(parent, title="TradePlaza-Item Details", size=(480,320))
         self._new_user = None
 
         try:
@@ -277,7 +276,7 @@ class ItemDetailsForm(wx.Dialog):
                 if res[0] != self.another_u_pc:
                     self.is_diff_pc = True
 
-        except(mysql.connector.Error,Exception) as e:
+        except(Error,Exception) as e:
             wx.MessageBox("Error in retrieving item details: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
             return False
 
@@ -288,13 +287,21 @@ class ItemDetailsForm(wx.Dialog):
         panel = wx.Panel(self)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
+        text_pi = wx.StaticText(panel, -1, label="Item Details")
+        text_pi.SetFont(font_10n)
+        main_sizer.Add(text_pi, 0, wx.EXPAND|wx.LEFT|wx.TOP, 5)
+
+        blue_line = wx.StaticText(panel, label="_"*80)
+        blue_line.SetForegroundColour('blue')
+        main_sizer.Add(blue_line, 0, wx.LEFT, 5)
+
+
         if not self.is_another_user:
             gs = wx.FlexGridSizer(10, 2, 5, 5)
 
-            text_pi = wx.StaticText(panel, -1, label="Item Details")
-            text_pi.SetFont(font_10n)
-            gs.Add(text_pi, 0, wx.EXPAND)
-            
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
             tmp = wx.StaticText(panel, -1, label="")
             gs.Add(tmp, 0, wx.EXPAND)
 
@@ -384,10 +391,6 @@ class ItemDetailsForm(wx.Dialog):
         else:
             gs = wx.FlexGridSizer(10, 4, 5, 5)
 
-            text_pi = wx.StaticText(panel, -1, label="Item Details")
-            text_pi.SetFont(font_10n)
-            gs.Add(text_pi, 0, wx.EXPAND)
-            
             tmp = wx.StaticText(panel, -1, label="")
             gs.Add(tmp, 0, wx.EXPAND)
 
@@ -397,9 +400,11 @@ class ItemDetailsForm(wx.Dialog):
             tmp = wx.StaticText(panel, -1, label="")
             gs.Add(tmp, 0, wx.EXPAND)
 
-            blue_line = wx.StaticText(panel, label="_"*30)
-            blue_line.SetForegroundColour('blue')
-            gs.Add(blue_line, 0, wx.EXPAND)
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
 
             tmp = wx.StaticText(panel, -1, label="")
             gs.Add(tmp, 0, wx.EXPAND)
@@ -568,17 +573,16 @@ class ItemDetailsForm(wx.Dialog):
             res = cursor.fetchone()
 
         
-        main_sizer.Add(gs, 0, wx.EXPAND|wx.ALL, 5)
+        main_sizer.Add(gs, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
         if res[0] <2:
-            self.ptBtn = wx.Button(panel, label="Propose trade", style=wx.BORDER_NONE)
+            self.ptBtn = wx.Button(panel, label="Propose trade", style=wx.BORDER_NONE, size=(100, 40))
             self.ptBtn.SetBackgroundColour('blue')
             self.ptBtn.SetForegroundColour('white')
+            main_sizer.Add(self.ptBtn, 0, wx.RIGHT|wx.ALIGN_RIGHT, 75)
             self.Bind(wx.EVT_BUTTON, self.invoke_propose_trade, self.ptBtn)
-            main_sizer.Add(self.ptBtn, 0, wx.EXPAND, 5)
-            # self.SetSizerAndFit(gs)
-            print("Button added")
+            #print("Button added")
 
-        panel.SetSizerAndFit(main_sizer)
+        panel.SetSizer(main_sizer)
 
     def invoke_propose_trade(self, event):
         
