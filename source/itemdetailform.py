@@ -102,15 +102,15 @@ class ItemDetailForm(wx.Dialog):
 
         result_rt = wx.StaticText(panel, label=self.user_status[1] + ' days')
         result_rt.SetFont(font_10n)
-        if self.user_status[1] == 'None':
+        if self.user_status[0] == 'None':
             result_rt.SetForegroundColour("Black")
-        elif float(self.user_status[1]) <= 7.0:
+        elif float(self.user_status[0]) <= 7.0:
             result_rt.SetForegroundColour("Green")
-        elif float(self.user_status[1]) <= 14.0:
+        elif float(self.user_status[0]) <= 14.0:
             result_rt.SetForegroundColour("Yellow")
-        elif float(self.user_status[1]) <= 20.9:
+        elif float(self.user_status[0]) <= 20.9:
             result_rt.SetForegroundColour("Orange")
-        elif float(self.user_status[1]) <= 27.9:
+        elif float(self.user_status[0]) <= 27.9:
             result_rt.SetForegroundColour("Red")
         else:
             result_rt.SetForegroundColour("Red")
@@ -128,7 +128,7 @@ class ItemDetailForm(wx.Dialog):
         text_ar.SetFont(font_10n)
         gs.Add(text_ar, 0, wx.EXPAND)
 
-        result_ar = wx.StaticText(panel, label=self.user_status[2])
+        result_ar = wx.StaticText(panel, label=self.user_status[1])
         result_ar.SetFont(font_10n)
         gs.Add(result_ar, 0, wx.EXPAND)
 

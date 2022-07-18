@@ -189,6 +189,10 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
+<<<<<<< Updated upstream
+=======
+            self.responseTime = res[-1][-1]
+>>>>>>> Stashed changes
             if len(res) == 0:
                 self.text_responseTime.SetForegroundColour("Black")
                 self.text_responseTime.SetLabel("N/A")
@@ -236,7 +240,7 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
-            
+            self.myRank = res[-1][-1]
             if len(res) == 0:
                 self.text_myRank.SetLabel("None")
             elif res[-1][-1] <=2:
@@ -264,7 +268,7 @@ class MainWindow(wx.Frame):
         dar.ShowModal()
         
     def DoMyItems(self, event):
-        self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
+        self.user_status = [self.responseTime, self.myRank]
         mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user, user_status = self.user_status)
         mi.ShowModal()
 
