@@ -189,7 +189,6 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
-            print(res[-1][-1])
             if len(res) == 0:
                 self.text_responseTime.SetForegroundColour("Black")
                 self.text_responseTime.SetLabel("N/A")
