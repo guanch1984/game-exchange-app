@@ -83,7 +83,8 @@ class TradeHistoryForm(wx.Dialog):
                 for j in range(5):
                     countGrid.SetCellValue(i,j, str(result[i][j]))
                     if j==4 and float(result[i][j])>=0.5:
-                        countGrid.SetBackgroundColour(i,j,"red")
+                        # countGrid.SetBackgroundColour(i,j,"red")
+                        countGrid.SetCellBackgroundColour(i, j, 'red')
         else:
             print('no result found!')      
 
