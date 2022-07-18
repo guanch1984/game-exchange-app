@@ -97,7 +97,7 @@ class MainWindow(wx.Frame):
         statbox1Sizer.Add(text_responseTime, 0, wx.EXPAND)
         statsSizer.Add(statbox1Sizer, 0, wx.ALL, 20)
 
-        
+
 
         statBox2 = wx.StaticBox(self, wx.ID_ANY, "My rank", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox2Sizer = wx.StaticBoxSizer(statBox2, wx.VERTICAL)
@@ -158,7 +158,7 @@ class MainWindow(wx.Frame):
                         SELECT item_number, email FROM ComputerGame WHERE email = "{email}" UNION
                         SELECT item_number, email FROM PlayingCardGame WHERE email = "{email}" UNION
                         SELECT item_number, email FROM VideoGame WHERE email = "{email}"
-                    ) as all_items INNER JOIN trade ON counter_party_item_number = item_number
+                    ) as all_items INNER JOIN Trade ON counter_party_item_number = item_number
                 WHERE trade_status = "PENDING"
             """.format(email=user_id)
 
