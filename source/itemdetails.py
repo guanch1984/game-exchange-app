@@ -259,7 +259,6 @@ class ItemDetailsForm(wx.Dialog):
 
             cursor.execute(self.query)
             self.itemresult = cursor.fetchone()
-            print(self.itemresult)
 
             if self.user_id != self.itemresult[4]:
                 self.is_another_user = True
@@ -288,112 +287,237 @@ class ItemDetailsForm(wx.Dialog):
         self.SetBackgroundColour('white')
         panel = wx.Panel(self)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        gs = wx.FlexGridSizer(10, 4, 5, 5)
-        
-        text_pi = wx.StaticText(panel, -1, label="Item Details")
-        text_pi.SetFont(font_10n)
-        gs.Add(text_pi, 0, wx.EXPAND)
+
+        if not self.is_another_user:
+            gs = wx.FlexGridSizer(10, 2, 5, 5)
+
+            text_pi = wx.StaticText(panel, -1, label="Item Details")
+            text_pi.SetFont(font_10n)
+            gs.Add(text_pi, 0, wx.EXPAND)
             
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
 
-        blue_line = wx.StaticText(panel, label="_"*30)
-        blue_line.SetForegroundColour('blue')
-        gs.Add(blue_line, 0, wx.EXPAND)
+            blue_line = wx.StaticText(panel, label="_"*30)
+            blue_line.SetForegroundColour('blue')
+            gs.Add(blue_line, 0, wx.EXPAND)
 
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
-        tmp = wx.StaticText(panel, -1, label="")
-        gs.Add(tmp, 0, wx.EXPAND)
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
 
-        text_in = wx.StaticText(panel, label="Item #")
-        text_in.SetFont(font_10b)
-        gs.Add(text_in, 0, wx.EXPAND)
+            text_in = wx.StaticText(panel, label="Item #")
+            text_in.SetFont(font_10b)
+            gs.Add(text_in, 0, wx.EXPAND)
 
-        result_pi = wx.StaticText(panel, label=str(self.searchresult[0]))
-        result_pi.SetFont(font_10n)
-        gs.Add(result_pi, 0, wx.EXPAND)
-
-        text_in = wx.StaticText(panel, label="Offered by")
-        text_in.SetFont(font_10b)
-        gs.Add(text_in, 0, wx.EXPAND)
-
-        result_pi = wx.StaticText(panel, label=str(self.another_u_nickname))
-        result_pi.SetFont(font_10b)
-        gs.Add(result_pi, 0, wx.EXPAND)
-
-        text_title = wx.StaticText(panel, label="Title")
-        text_title.SetFont(font_10b)
-        gs.Add(text_title, 0, wx.EXPAND)
-
-        result_pi = wx.StaticText(panel, label=str(self.searchresult[2]))
-        result_pi.SetFont(font_10n)
-        gs.Add(result_pi, 0, wx.EXPAND)
-
-        text_title = wx.StaticText(panel, label="Location")
-        text_title.SetFont(font_10b)
-        gs.Add(text_title, 0, wx.EXPAND)
-
-        result_pi = wx.StaticText(panel, label=self.another_u_city + ", " + self.another_u_state + " " + self.another_u_pc)
-        result_pi.SetFont(font_10n)
-        gs.Add(result_pi, 0, wx.EXPAND)
-
-        text_gt = wx.StaticText(panel, label="Game Type")
-        text_gt.SetFont(font_10b)
-        gs.Add(text_gt, 0, wx.EXPAND)
-
-        result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
-        result_dgt.SetFont(font_10n)
-        gs.Add(result_dgt, 0, wx.EXPAND)
-
-        text_gt = wx.StaticText(panel, label="Response Time")
-        text_gt.SetFont(font_10b)
-        gs.Add(text_gt, 0, wx.EXPAND)
-
-        result_dgt = wx.StaticText(panel, label=str(self.searchresult[5]))
-        result_dgt.SetFont(font_10n)
-        gs.Add(result_dgt, 0, wx.EXPAND)
-
-        print(self.searchresult)
-        if self.searchresult[1] == "Video game":
-            text_title = wx.StaticText(panel, label="Platform")
-            text_title.SetFont(font_10b)
-            gs.Add(text_title, 0, wx.EXPAND)
-
-            result_pi = wx.StaticText(panel, label=str(self.itemresult[0]))
+            result_pi = wx.StaticText(panel, label=str(self.searchresult[0]))
             result_pi.SetFont(font_10n)
             gs.Add(result_pi, 0, wx.EXPAND)
 
-            text_condition = wx.StaticText(panel, label="Rank")
-            text_condition.SetFont(font_10b)
-            gs.Add(text_condition, 0, wx.EXPAND)
+            text_title = wx.StaticText(panel, label="Title")
+            text_title.SetFont(font_10b)
+            gs.Add(text_title, 0, wx.EXPAND)
 
-            result_pc = wx.StaticText(panel, label=str(self.searchresult[6]))
-            result_pc.SetFont(font_10n)
-            gs.Add(result_pc, 0, wx.EXPAND)
+            result_pi = wx.StaticText(panel, label=str(self.searchresult[2]))
+            result_pi.SetFont(font_10n)
+            gs.Add(result_pi, 0, wx.EXPAND)
 
-            text_gt = wx.StaticText(panel, label="Media")
+            text_gt = wx.StaticText(panel, label="Game Type")
             text_gt.SetFont(font_10b)
             gs.Add(text_gt, 0, wx.EXPAND)
 
-            result_dgt = wx.StaticText(panel, label=str(self.itemresult[2]))
+            result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
             result_dgt.SetFont(font_10n)
             gs.Add(result_dgt, 0, wx.EXPAND)
+
+            if self.searchresult[1] == "Video game":
+                text_title = wx.StaticText(panel, label="Platform")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[0]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+
+                text_gt = wx.StaticText(panel, label="Media")
+                text_gt.SetFont(font_10b)
+                gs.Add(text_gt, 0, wx.EXPAND)
+
+                result_dgt = wx.StaticText(panel, label=str(self.itemresult[2]))
+                result_dgt.SetFont(font_10n)
+                gs.Add(result_dgt, 0, wx.EXPAND)
             
-        elif self.searchresult[1] == "Computer game":
-            text_title = wx.StaticText(panel, label="Platform")
+            elif self.searchresult[1] == "Computer game":
+                text_title = wx.StaticText(panel, label="Platform")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[1]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+            
+            elif self.searchresult[1] == "Collectible card game":
+                text_title = wx.StaticText(panel, label="No Of Cards")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[3]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+
+            text_condition = wx.StaticText(panel, label="Condition")
+            text_condition.SetFont(font_10b)
+            gs.Add(text_condition, 0, wx.EXPAND)
+
+            result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
+            result_pc.SetFont(font_10n)
+            gs.Add(result_pc, 0, wx.EXPAND)
+
+            if self.searchresult[4].strip():
+                text_condition = wx.StaticText(panel, label="Description")
+                text_condition.SetFont(font_10b)
+                gs.Add(text_condition, 0, wx.EXPAND)
+
+                result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
+                result_pc.SetFont(font_10n)
+                gs.Add(result_pc, 0, wx.EXPAND)
+        
+        else:
+            gs = wx.FlexGridSizer(10, 4, 5, 5)
+
+            text_pi = wx.StaticText(panel, -1, label="Item Details")
+            text_pi.SetFont(font_10n)
+            gs.Add(text_pi, 0, wx.EXPAND)
+            
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            blue_line = wx.StaticText(panel, label="_"*30)
+            blue_line.SetForegroundColour('blue')
+            gs.Add(blue_line, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            tmp = wx.StaticText(panel, -1, label="")
+            gs.Add(tmp, 0, wx.EXPAND)
+
+            text_in = wx.StaticText(panel, label="Item #")
+            text_in.SetFont(font_10b)
+            gs.Add(text_in, 0, wx.EXPAND)
+
+            result_pi = wx.StaticText(panel, label=str(self.searchresult[0]))
+            result_pi.SetFont(font_10n)
+            gs.Add(result_pi, 0, wx.EXPAND)
+
+            text_in = wx.StaticText(panel, label="Offered by")
+            text_in.SetFont(font_10b)
+            gs.Add(text_in, 0, wx.EXPAND)
+
+            result_pi = wx.StaticText(panel, label=str(self.another_u_nickname))
+            result_pi.SetFont(font_10n)
+            gs.Add(result_pi, 0, wx.EXPAND)
+
+            text_title = wx.StaticText(panel, label="Title")
             text_title.SetFont(font_10b)
             gs.Add(text_title, 0, wx.EXPAND)
 
-            result_pi = wx.StaticText(panel, label=str(self.itemresult[1]))
+            result_pi = wx.StaticText(panel, label=str(self.searchresult[2]))
             result_pi.SetFont(font_10n)
             gs.Add(result_pi, 0, wx.EXPAND)
+
+            text_title = wx.StaticText(panel, label="Location")
+            text_title.SetFont(font_10b)
+            gs.Add(text_title, 0, wx.EXPAND)
+
+            result_pi = wx.StaticText(panel, label=self.another_u_city + ", " + self.another_u_state + " " + self.another_u_pc)
+            result_pi.SetFont(font_10n)
+            gs.Add(result_pi, 0, wx.EXPAND)
+
+            text_gt = wx.StaticText(panel, label="Game Type")
+            text_gt.SetFont(font_10b)
+            gs.Add(text_gt, 0, wx.EXPAND)
+
+            result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
+            result_dgt.SetFont(font_10n)
+            gs.Add(result_dgt, 0, wx.EXPAND)
+
+            text_gt = wx.StaticText(panel, label="Response Time")
+            text_gt.SetFont(font_10b)
+            gs.Add(text_gt, 0, wx.EXPAND)
+
+            result_dgt = wx.StaticText(panel, label=str(self.searchresult[5]))
+            result_dgt.SetFont(font_10n)
+            gs.Add(result_dgt, 0, wx.EXPAND)
+
+            if self.searchresult[1] == "Video game":
+                text_title = wx.StaticText(panel, label="Platform")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[0]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+
+                text_gt = wx.StaticText(panel, label="Media")
+                text_gt.SetFont(font_10b)
+                gs.Add(text_gt, 0, wx.EXPAND)
+
+                result_dgt = wx.StaticText(panel, label=str(self.itemresult[2]))
+                result_dgt.SetFont(font_10n)
+                gs.Add(result_dgt, 0, wx.EXPAND)
+            
+            elif self.searchresult[1] == "Computer game":
+                text_title = wx.StaticText(panel, label="Platform")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[1]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+            
+            elif self.searchresult[1] == "Collectible card game":
+                text_title = wx.StaticText(panel, label="No Of Cards")
+                text_title.SetFont(font_10b)
+                gs.Add(text_title, 0, wx.EXPAND)
+
+                result_pi = wx.StaticText(panel, label=str(self.itemresult[3]))
+                result_pi.SetFont(font_10n)
+                gs.Add(result_pi, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
+
+            text_condition = wx.StaticText(panel, label="Condition")
+            text_condition.SetFont(font_10b)
+            gs.Add(text_condition, 0, wx.EXPAND)
+
+            result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
+            result_pc.SetFont(font_10n)
+            gs.Add(result_pc, 0, wx.EXPAND)
 
             text_condition = wx.StaticText(panel, label="Rank")
             text_condition.SetFont(font_10b)
@@ -403,378 +527,63 @@ class ItemDetailsForm(wx.Dialog):
             result_pc.SetFont(font_10n)
             gs.Add(result_pc, 0, wx.EXPAND)
 
-            tmp = wx.StaticText(panel, -1, label="")
-            gs.Add(tmp, 0, wx.EXPAND)
+            if self.searchresult[4].strip():
+                text_condition = wx.StaticText(panel, label="Description")
+                text_condition.SetFont(font_10b)
+                gs.Add(text_condition, 0, wx.EXPAND)
 
-            tmp = wx.StaticText(panel, -1, label="")
-            gs.Add(tmp, 0, wx.EXPAND)
-            
-        elif self.searchresult[1] == "Collectible card game":
-            text_title = wx.StaticText(panel, label="No Of Cards")
-            text_title.SetFont(font_10b)
-            gs.Add(text_title, 0, wx.EXPAND)
+                result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
+                result_pc.SetFont(font_10n)
+                gs.Add(result_pc, 0, wx.EXPAND)
+            else:
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
 
-            result_pi = wx.StaticText(panel, label=str(self.itemresult[3]))
-            result_pi.SetFont(font_10n)
-            gs.Add(result_pi, 0, wx.EXPAND)
+                tmp = wx.StaticText(panel, -1, label="")
+                gs.Add(tmp, 0, wx.EXPAND)
 
-            text_condition = wx.StaticText(panel, label="Rank")
-            text_condition.SetFont(font_10b)
-            gs.Add(text_condition, 0, wx.EXPAND)
+            if self.is_diff_pc:
+                text_condition = wx.StaticText(panel, label="Distance")
+                text_condition.SetFont(font_10b)
+                gs.Add(text_condition, 0, wx.EXPAND)
 
-            result_pc = wx.StaticText(panel, label=str(self.searchresult[6]))
-            result_pc.SetFont(font_10n)
-            gs.Add(result_pc, 0, wx.EXPAND)
+                result_pc = wx.StaticText(panel, label=str(self.searchresult[7]))
 
-            tmp = wx.StaticText(panel, -1, label="")
-            gs.Add(tmp, 0, wx.EXPAND)
+                if self.searchresult[7] >=0.0 and self.searchresult[7] <= 25.0:
+                    result_pc.SetBackgroundColour("green")
+                elif self.searchresult[7] >=25.0 and self.searchresult[7] <= 50.0:
+                    result_pc.SetBackgroundColour("yellow")
+                elif self.searchresult[7] >=50.0 and self.searchresult[7] <= 100.0:
+                    result_pc.SetBackgroundColour("orange")
+                elif self.searchresult[7] >100.0:
+                    result_pc.SetBackgroundColour("red")
 
-            tmp = wx.StaticText(panel, -1, label="")
-            gs.Add(tmp, 0, wx.EXPAND)
+                result_pc.SetFont(font_10n)
+                gs.Add(result_pc, 0, wx.EXPAND)
+
+            cursor = self.connection.cursor()
+            query = form_query_propose_trade(self.user_id)
+
+            cursor.execute(query)
+            res = cursor.fetchone()
+
         
-        text_d = wx.StaticText(panel, label="Distance")
-        text_d.SetFont(font_10n)
-        gs.Add(text_d, 0, wx.EXPAND)
-        result_d = wx.StaticText(panel, label=str(self.searchresult[7]))
-        result_d.SetFont(font_10n)
-        gs.Add(result_d, 0, wx.EXPAND)
-
-        if self.searchresult[7] >=0.0 and self.searchresult[7] <= 25.0:
-            text_d.SetBackgroundColour("green")
-            result_d.SetBackgroundColour("green")
-        elif self.searchresult[7] >=25.0 and self.searchresult[7] <= 50.0:
-            text_d.SetBackgroundColour("yellow")
-            result_d.SetBackgroundColour("yellow")
-        elif self.searchresult[7] >=50.0 and self.searchresult[7] <= 100.0:
-            text_d.SetBackgroundColour("orange")
-            result_d.SetBackgroundColour("orange")
-        elif self.searchresult[7] >100.0:
-            text_d.SetBackgroundColour("red")
-            result_d.SetBackgroundColour("red")
-
-        text_condition = wx.StaticText(panel, label="Condition")
-        text_condition.SetFont(font_10b)
-        gs.Add(text_condition, 0, wx.EXPAND)
-
-        result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
-        result_pc.SetFont(font_10n)
-        gs.Add(result_pc, 0, wx.EXPAND)
-        
-        
-        
-
-        query = form_query_propose_trade(self.user_id)
-
-        cursor.execute(query)
-        res = cursor.fetchone()
-
+        main_sizer.Add(gs, 0, wx.EXPAND|wx.ALL, 5)
         if res[0] <2:
-            self.ptBtn = wx.Button(self, wx.ID_ANY, label="Propose trade")
+            self.ptBtn = wx.Button(panel, label="Propose trade", style=wx.BORDER_NONE)
             self.ptBtn.SetBackgroundColour('blue')
             self.ptBtn.SetForegroundColour('white')
             self.Bind(wx.EVT_BUTTON, self.invoke_propose_trade, self.ptBtn)
-            gs.Add(self.ptBtn, 0, wx.EXPAND, 5)
+            main_sizer.Add(self.ptBtn, 0, wx.EXPAND, 5)
             # self.SetSizerAndFit(gs)
-        # self.SetSizerAndFit(gs)
-        main_sizer.Add(gs, 1, wx.EXPAND|wx.ALL, border = 15)
-        panel.SetSizer(main_sizer)
+            print("Button added")
 
-
-
-        # if not self.is_another_user:
-        #     gs = wx.FlexGridSizer(10, 2, 5, 5)
-
-        #     text_pi = wx.StaticText(panel, -1, label="Item Details")
-        #     text_pi.SetFont(font_10n)
-        #     gs.Add(text_pi, 0, wx.EXPAND)
-            
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     blue_line = wx.StaticText(panel, label="_"*30)
-        #     blue_line.SetForegroundColour('blue')
-        #     gs.Add(blue_line, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     text_in = wx.StaticText(panel, label="Item #")
-        #     text_in.SetFont(font_10b)
-        #     gs.Add(text_in, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=str(self.searchresult[0]))
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_title = wx.StaticText(panel, label="Title")
-        #     text_title.SetFont(font_10b)
-        #     gs.Add(text_title, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=str(self.searchresult[2]))
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_gt = wx.StaticText(panel, label="Game Type")
-        #     text_gt.SetFont(font_10b)
-        #     gs.Add(text_gt, 0, wx.EXPAND)
-
-        #     result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
-        #     result_dgt.SetFont(font_10n)
-        #     gs.Add(result_dgt, 0, wx.EXPAND)
-
-        #     if self.searchresult[1] == "Video game":
-        #         text_title = wx.StaticText(panel, label="Platform")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[0]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-
-        #         text_gt = wx.StaticText(panel, label="Media")
-        #         text_gt.SetFont(font_10b)
-        #         gs.Add(text_gt, 0, wx.EXPAND)
-
-        #         result_dgt = wx.StaticText(panel, label=str(self.itemresult[2]))
-        #         result_dgt.SetFont(font_10n)
-        #         gs.Add(result_dgt, 0, wx.EXPAND)
-            
-        #     elif self.searchresult[1] == "Computer game":
-        #         text_title = wx.StaticText(panel, label="Platform")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[1]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-            
-        #     elif self.searchresult[1] == "Collectible card game":
-        #         text_title = wx.StaticText(panel, label="No Of Cards")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[3]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_condition = wx.StaticText(panel, label="Condition")
-        #     text_condition.SetFont(font_10b)
-        #     gs.Add(text_condition, 0, wx.EXPAND)
-
-        #     result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
-        #     result_pc.SetFont(font_10n)
-        #     gs.Add(result_pc, 0, wx.EXPAND)
-
-        #     if self.searchresult[4].strip():
-        #         text_condition = wx.StaticText(panel, label="Description")
-        #         text_condition.SetFont(font_10b)
-        #         gs.Add(text_condition, 0, wx.EXPAND)
-
-        #         result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
-        #         result_pc.SetFont(font_10n)
-        #         gs.Add(result_pc, 0, wx.EXPAND)
-        
-        # else:
-        #     gs = wx.FlexGridSizer(10, 4, 5, 5)
-
-        #     text_pi = wx.StaticText(panel, -1, label="Item Details")
-        #     text_pi.SetFont(font_10n)
-        #     gs.Add(text_pi, 0, wx.EXPAND)
-            
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     blue_line = wx.StaticText(panel, label="_"*30)
-        #     blue_line.SetForegroundColour('blue')
-        #     gs.Add(blue_line, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     tmp = wx.StaticText(panel, -1, label="")
-        #     gs.Add(tmp, 0, wx.EXPAND)
-
-        #     text_in = wx.StaticText(panel, label="Item #")
-        #     text_in.SetFont(font_10b)
-        #     gs.Add(text_in, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=str(self.searchresult[0]))
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_in = wx.StaticText(panel, label="Offered by")
-        #     text_in.SetFont(font_10b)
-        #     gs.Add(text_in, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=str(self.another_u_nickname))
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_title = wx.StaticText(panel, label="Title")
-        #     text_title.SetFont(font_10b)
-        #     gs.Add(text_title, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=str(self.searchresult[2]))
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_title = wx.StaticText(panel, label="Location")
-        #     text_title.SetFont(font_10b)
-        #     gs.Add(text_title, 0, wx.EXPAND)
-
-        #     result_pi = wx.StaticText(panel, label=self.another_u_city + ", " + self.another_u_state + " " + self.another_u_pc)
-        #     result_pi.SetFont(font_10n)
-        #     gs.Add(result_pi, 0, wx.EXPAND)
-
-        #     text_gt = wx.StaticText(panel, label="Game Type")
-        #     text_gt.SetFont(font_10b)
-        #     gs.Add(text_gt, 0, wx.EXPAND)
-
-        #     result_dgt = wx.StaticText(panel, label=str(self.searchresult[1]))
-        #     result_dgt.SetFont(font_10n)
-        #     gs.Add(result_dgt, 0, wx.EXPAND)
-
-        #     text_gt = wx.StaticText(panel, label="Response Time")
-        #     text_gt.SetFont(font_10b)
-        #     gs.Add(text_gt, 0, wx.EXPAND)
-
-        #     result_dgt = wx.StaticText(panel, label=str(self.searchresult[5]))
-        #     result_dgt.SetFont(font_10n)
-        #     gs.Add(result_dgt, 0, wx.EXPAND)
-
-        #     if self.searchresult[1] == "Video game":
-        #         text_title = wx.StaticText(panel, label="Platform")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[0]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #         text_gt = wx.StaticText(panel, label="Media")
-        #         text_gt.SetFont(font_10b)
-        #         gs.Add(text_gt, 0, wx.EXPAND)
-
-        #         result_dgt = wx.StaticText(panel, label=str(self.itemresult[2]))
-        #         result_dgt.SetFont(font_10n)
-        #         gs.Add(result_dgt, 0, wx.EXPAND)
-            
-        #     elif self.searchresult[1] == "Computer game":
-        #         text_title = wx.StaticText(panel, label="Platform")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[1]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-            
-        #     elif self.searchresult[1] == "Collectible card game":
-        #         text_title = wx.StaticText(panel, label="No Of Cards")
-        #         text_title.SetFont(font_10b)
-        #         gs.Add(text_title, 0, wx.EXPAND)
-
-        #         result_pi = wx.StaticText(panel, label=str(self.itemresult[3]))
-        #         result_pi.SetFont(font_10n)
-        #         gs.Add(result_pi, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #     text_condition = wx.StaticText(panel, label="Condition")
-        #     text_condition.SetFont(font_10b)
-        #     gs.Add(text_condition, 0, wx.EXPAND)
-
-        #     result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
-        #     result_pc.SetFont(font_10n)
-        #     gs.Add(result_pc, 0, wx.EXPAND)
-
-        #     text_condition = wx.StaticText(panel, label="Rank")
-        #     text_condition.SetFont(font_10b)
-        #     gs.Add(text_condition, 0, wx.EXPAND)
-
-        #     result_pc = wx.StaticText(panel, label=str(self.searchresult[6]))
-        #     result_pc.SetFont(font_10n)
-        #     gs.Add(result_pc, 0, wx.EXPAND)
-
-        #     if self.searchresult[4].strip():
-        #         text_condition = wx.StaticText(panel, label="Description")
-        #         text_condition.SetFont(font_10b)
-        #         gs.Add(text_condition, 0, wx.EXPAND)
-
-        #         result_pc = wx.StaticText(panel, label=str(self.searchresult[3]))
-        #         result_pc.SetFont(font_10n)
-        #         gs.Add(result_pc, 0, wx.EXPAND)
-        #     else:
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #         tmp = wx.StaticText(panel, -1, label="")
-        #         gs.Add(tmp, 0, wx.EXPAND)
-
-        #     if self.is_diff_pc:
-        #         text_condition = wx.StaticText(panel, label="Distance")
-        #         text_condition.SetFont(font_10b)
-        #         gs.Add(text_condition, 0, wx.EXPAND)
-
-        #         result_pc = wx.StaticText(panel, label=str(self.searchresult[7]))
-
-        #         if self.searchresult[7] >=0.0 and self.searchresult[7] <= 25.0:
-        #             result_pc.SetBackgroundColour("green")
-        #         elif self.searchresult[7] >=25.0 and self.searchresult[7] <= 50.0:
-        #             result_pc.SetBackgroundColour("yellow")
-        #         elif self.searchresult[7] >=50.0 and self.searchresult[7] <= 100.0:
-        #             result_pc.SetBackgroundColour("orange")
-        #         elif self.searchresult[7] >100.0:
-        #             result_pc.SetBackgroundColour("red")
-
-        #         result_pc.SetFont(font_10n)
-        #         gs.Add(result_pc, 0, wx.EXPAND)
-
-        #     cursor = self.connection.cursor()
-        #     query = form_query_propose_trade(self.user_id)
-
-        #     cursor.execute(query)
-        #     res = cursor.fetchone()
-
-        #     if res[0] <2:
-        #         self.ptBtn = wx.Button(self, label="Propose trade", style=wx.BORDER_NONE)
-        #         self.ptBtn.SetBackgroundColour('blue')
-        #         self.ptBtn.SetForegroundColour('white')
-        #         self.Bind(wx.EVT_BUTTON, self.invoke_propose_trade, self.ptBtn)
-        #         gs.Add(self.ptBtn, 0, wx.ALL, 5)
-        #         self.SetSizerAndFit(gs)
-        
-        # main_sizer.Add(gs, 1, wx.EXPAND|wx.ALL, border = 15)
-        # panel.SetSizer(main_sizer)
+        panel.SetSizerAndFit(main_sizer)
 
     def invoke_propose_trade(self, event):
         
         self.Hide()
-        sr=ProposeTradeForm(self.Parent, distance=self.searchresult[7], connection=self.connection, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
+        sr=ProposeTradeForm(self.Parent, distance=self.searchresult[7] ,connection=self.connection, tradeitem=self.searchresult[2],tradeitemnumber=self.searchresult[0],user_id=self.user_id)
         r=sr.ShowModal()
         if r == wx.ID_OK:
             self.EndModal(wx.ID_OK)
