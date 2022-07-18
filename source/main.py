@@ -189,10 +189,7 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
-<<<<<<< Updated upstream
-=======
             self.responseTime = res[-1][-1]
->>>>>>> Stashed changes
             if len(res) == 0:
                 self.text_responseTime.SetForegroundColour("Black")
                 self.text_responseTime.SetLabel("N/A")
@@ -240,21 +237,28 @@ class MainWindow(wx.Frame):
                     GROUP BY TradeJoin.email;""".format(email=user_id)
             cursor.execute(query)
             res = cursor.fetchall()
-            self.myRank = res[-1][-1]
+            
             if len(res) == 0:
                 self.text_myRank.SetLabel("None")
+                self.myRank = "None"
             elif res[-1][-1] <=2:
                 self.text_myRank.SetLabel('Aluminium')
+                self.myRank = "Aluminium"
             elif res[-1][-1] <=3:
                 self.text_myRank.SetLabel('Bronze')
+                self.myRank = "Bronze"
             elif res[-1][-1] <=5:
                 self.text_myRank.SetLabel('Silver')
+                self.myRank = "Silver"
             elif res[-1][-1] <=7:
                 self.text_myRank.SetLabel('Gold')
+                self.myRank = "Gold"
             elif res[-1][-1] <=9:
                 self.text_myRank.SetLabel('Platinum')
+                self.myRank = "Platinum"
             else:
                 self.text_myRank.SetLabel('Alexandinium')
+                self.myRank = "Alexandinium"
         except Error as e:
             self.myRank="Error"
             wx.MessageBox("Error connecting to DB: " + str(e), "Error", style=wx.OK|wx.ICON_ERROR)
