@@ -255,24 +255,29 @@ class MainWindow(wx.Frame):
     def DoListItem(self, event):
         dl = NewListingForm(self, connection=self.connection, user_id=self.logged_user)
         dl.ShowModal()
+        self.RenderMainMenu()
 
     def DoAcceptRejectTrade(self, event):
         if int(self.unacceptedTrades) > 0:
             dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
             dar.ShowModal()
+            self.RenderMainMenu()
         
     def DoMyItems(self, event):
         self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
         mi = MyItemsForm(self, connection=self.connection, user_id = self.logged_user, user_status = self.user_status)
         mi.ShowModal()
+        self.RenderMainMenu()
 
     def DoSearchItem(self, event):
         sf = SearchForm(self, connection=self.connection)
         sf.ShowModal()
+        self.RenderMainMenu()
 
     def DoTradeHistory(self,event):
         th = TradeHistoryForm(self, connection=self.connection, user_id = self.logged_user)
         th.ShowModal()
+        self.RenderMainMenu()
 
     def DoLogin(self):
         lf = LoginForm(self, connection=self.connection)
