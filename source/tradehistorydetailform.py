@@ -79,7 +79,7 @@ class TradeHistoryDetailForm(wx.Dialog):
         text_ar.SetFont(font_10b)
         gs.Add(text_ar, 0, wx.EXPAND)
 
-        result_ar = wx.StaticText(panel, label=self.detailresult[1])
+        result_ar = wx.StaticText(panel, label=str(self.detailresult[1]))
         result_ar.SetFont(font_10n)
         gs.Add(result_ar, 0, wx.EXPAND)
 
