@@ -68,16 +68,14 @@ class MainWindow(wx.Frame):
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
         statsSizer = wx.BoxSizer(wx.VERTICAL)
         # add user stats
-        button_unacceptedTrades = wx.Button(self, label=self.unacceptedTrades, style=wx.BORDER_NONE, size=(100,50))
-        button_unacceptedTrades.SetBackgroundColour('white')
-        button_unacceptedTrades.SetForegroundColour('black')
-        if int(self.unacceptedTrades) == 1:
-            self.Bind(wx.EVT_BUTTON, self.DoAcceptRejectTrade, button_unacceptedTrades)
-        elif int(self.unacceptedTrades) >=2 :
-            self.Bind(wx.EVT_BUTTON, self.DoAcceptRejectTrade, button_unacceptedTrades)
-            button_unacceptedTrades.SetForegroundColour('Red')
-
-        statsSizer.Add(button_unacceptedTrades, 0, wx.ALL, 20)
+        statBox0 = wx.StaticBox(self, wx.ID_ANY, "Unaccepted Trades", style=wx.ALIGN_CENTER_HORIZONTAL)
+        statbox0Sizer = wx.StaticBoxSizer(statBox0, wx.VERTICAL)
+        text_unacceptedTrade = wx.StaticText(self, label=str(self.unacceptedTrades), size=(120,-1), style=wx.ALIGN_CENTER)
+        if int(self.unacceptedTrades) >= 2:
+            text_unacceptedTrade.SetForegroundColour('red')
+        statbox0Sizer.Add(text_unacceptedTrade, 0, wx.EXPAND)
+        statsSizer.Add(statbox0Sizer, 0, wx.ALL, 20)
+        text_unacceptedTrade.Bind(wx.EVT_LEFT_DOWN, self.DoAcceptRejectTrade)
 
         statBox1 = wx.StaticBox(self, wx.ID_ANY, "Response time", style=wx.ALIGN_CENTER_HORIZONTAL)
         statbox1Sizer = wx.StaticBoxSizer(statBox1, wx.VERTICAL)
@@ -259,8 +257,9 @@ class MainWindow(wx.Frame):
         dl.ShowModal()
 
     def DoAcceptRejectTrade(self, event):
-        dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
-        dar.ShowModal()
+        if int(self.unacceptedTrades) > 0:
+            dar = AcceptRejectForm(self, connection=self.connection, user_id = self.logged_user)
+            dar.ShowModal()
         
     def DoMyItems(self, event):
         self.user_status = [self.unacceptedTrades, self.responseTime, self.myRank]
