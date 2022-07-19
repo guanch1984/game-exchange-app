@@ -12,7 +12,7 @@ class NewListingForm(wx.Dialog):
         self.SetIcon(parent.icon)
         self.gamePlatforms = []
         self.videoGameMedia = ['Optical Disk', 'Game Card', 'Cartridge']
-        self.gameConditions = ['Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing']
+        self.gameConditions = ['Unopened', 'Like New', 'Lightly Used', 'Moderately Used', 'Heavily Used', 'Damaged/Missing']
         self._logged_user = None
 
         self.SetBackgroundColour('white')
