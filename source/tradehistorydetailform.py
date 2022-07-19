@@ -12,7 +12,7 @@ class TradeHistoryDetailForm(wx.Dialog):
         except:
             self.Destroy()
 
-        super().__init__(parent, title="TradePlaza-Trade History Detail", size=(700,400))
+        super().__init__(parent, title="TradePlaza-Trade History Detail", size=(800,400))
         # self.SetIcon(parent.icon)
         self._new_user = None
 

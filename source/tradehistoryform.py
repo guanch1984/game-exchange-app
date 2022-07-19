@@ -33,7 +33,7 @@ class TradeHistoryForm(wx.Dialog):
         SELECT my_role, COUNT(*) AS Total, 
                 SUM( IF (trade_status="ACCEPT", 1, 0)) AS Accepted,
                 SUM( IF (trade_status ="REJECT", 1, 0)) AS Rejected,
-                FORMAT( SUM( IF (trade_status ="REJECT", 1, 0)) / COUNT(*) , 'P1') AS "Rejected %”"
+                cast(100 * SUM( IF (trade_status ="REJECT", 1, 0)) / COUNT(*) as decimal(18,2)) AS "Rejected %”"
         FROM (
             SELECT trade_status, IF(PI.email= %(user_email)s, "Proposer", "Counterparty") AS my_role
             FROM Trade AS T left JOIN (
@@ -81,10 +81,10 @@ class TradeHistoryForm(wx.Dialog):
         if result:
             for i in range(n):
                 for j in range(5):
-                    countGrid.SetCellValue(i,j, str(result[i][j]))
-                    if j==4 and float(result[i][j])>=0.5:
-                        # countGrid.SetBackgroundColour(i,j,"red")
+                    if j==4 and float(result[i][j])>=50:
+                        countGrid.SetCellValue(i,j, str(result[i][j]))
                         countGrid.SetCellBackgroundColour(i, j, 'red')
+                    countGrid.SetCellValue(i,j, str(result[i][j]))
         else:
             print('no result found!')      
 
